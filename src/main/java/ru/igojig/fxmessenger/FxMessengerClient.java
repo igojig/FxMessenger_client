@@ -6,7 +6,9 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import ru.igojig.fxmessenger.controllers.ChatController;
+import ru.igojig.fxmessenger.controllers.Controller;
 import ru.igojig.fxmessenger.controllers.LogInController;
+import ru.igojig.fxmessenger.file.MyFile;
 import ru.igojig.fxmessenger.service.Network;
 
 
@@ -15,6 +17,8 @@ import java.io.IOException;
 public class FxMessengerClient extends Application {
     static final String SERVER_NAME="localhost";
     static final int SERVER_PORT=8186;
+
+    private  MyFile myFile;
 
     private Network network;
 
@@ -77,17 +81,26 @@ public class FxMessengerClient extends Application {
     }
 
     public void showChat(){
+        myFile = new MyFile(Controller.id);
 //        mainStage.hide();
         chatController.startReadCycle();
         mainStage.setScene(sceneChat);
         mainStage.setTitle("Наш чат");
-        chatController.updateClientName(LogInOrRegisterController.getUserName());
+        chatController.setMsgHistory(myFile.read());
+        chatController.updateClientName(Controller.username);
         mainStage.show();
 //        network.waitMessage(chatController);
     }
 
     @Override
     public void stop() throws Exception {
+        //  если никто не авторизовался или зарегистрировался
+        if(Controller.id!=0) {
+            myFile.write(chatController.getMsgHistory());
+//            myFile.read();
+        }
+
+
         chatController.stop();
         network.exitClient();
         System.out.println("Exit JavaFX");

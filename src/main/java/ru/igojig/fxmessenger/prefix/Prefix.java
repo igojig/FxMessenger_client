@@ -2,7 +2,7 @@ package ru.igojig.fxmessenger.prefix;
 
 public class Prefix {
     public static final String AUTH_CMD_PREFIX = "/auth";          // + login + password
-    public static final String AUTH_OK_CMD_PREFIX = "/auth_ok";     // + username
+    public static final String AUTH_OK_CMD_PREFIX = "/auth_ok";     // + username + id
     public static final String AUTH_ERR_CMD_PREFIX = "/auth_err";  // + error
 
 

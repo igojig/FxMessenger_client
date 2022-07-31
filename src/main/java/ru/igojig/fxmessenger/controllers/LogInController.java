@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import ru.igojig.fxmessenger.FxMessengerClient;
+import ru.igojig.fxmessenger.controllers.handlers.ControllerHandler;
 import ru.igojig.fxmessenger.controllers.handlers.LoginControllerHandler;
 import ru.igojig.fxmessenger.controllers.handlers.RegisterControllerHandler;
 import ru.igojig.fxmessenger.service.Network;
@@ -68,7 +69,8 @@ public class LogInController extends Controller{
         }
         else {
             //открыввем чат
-            this.username=username.get();
+            Controller.username =username.get();
+            Controller.id=ControllerHandler.id;
             System.out.println("Открываем чат");
             fxMessengerClient.showChat();
         }
@@ -107,7 +109,8 @@ public class LogInController extends Controller{
         }
         else {
 //            network.setUserName(user.get());
-            this.username=user.get();
+            Controller.username =user.get();
+            Controller.id= ControllerHandler.id;
             //открыввем чат
             System.out.println("Открываем чат");
             fxMessengerClient.showChat();

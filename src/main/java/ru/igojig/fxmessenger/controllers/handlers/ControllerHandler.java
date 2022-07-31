@@ -9,6 +9,7 @@ import java.io.*;
 abstract public class ControllerHandler  {
 
     public static String username;
+    public static int id;
 
     protected Controller controller;
     protected Network network;
@@ -24,13 +25,13 @@ abstract public class ControllerHandler  {
 
         in=network.getInputStream();
         out=network.getOutputStream();
-
-        try {
-            objectInputStream=new ObjectInputStream(in);
-            objectOutputStream=new ObjectOutputStream(out);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//
+//        try {
+//            objectInputStream=new ObjectInputStream(in);
+//            objectOutputStream=new ObjectOutputStream(out);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
 
     }
 

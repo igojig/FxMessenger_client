@@ -36,10 +36,11 @@ public class RegisterControllerHandler extends ControllerHandler{
         try {
             while (true) {
                 String response = in.readUTF();
-                String[] responseParts = response.split("\\s+", 2);
+                String[] responseParts = response.split("\\s+", 3);
                 if (responseParts[0].equals(REGISTER_OK)) {
                     username = responseParts[1];
-                    System.out.println("Новый пользователь зарегистрировался под именем: " + username);
+                    id=Integer.parseInt(responseParts[2]);
+                    System.out.println("Новый пользователь зарегистрировался под именем: " + username + " Id=" + id);
                     return Optional.of(username);
                 }
                 if (responseParts[0].equals(REGISTER_ERR)) {

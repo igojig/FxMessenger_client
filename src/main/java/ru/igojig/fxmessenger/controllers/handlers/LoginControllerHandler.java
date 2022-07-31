@@ -3,18 +3,12 @@ package ru.igojig.fxmessenger.controllers.handlers;
 import ru.igojig.fxmessenger.controllers.Controller;
 import ru.igojig.fxmessenger.service.Network;
 
-
 import java.io.IOException;
 import java.util.Optional;
-import java.util.concurrent.*;
 
 import static ru.igojig.fxmessenger.prefix.Prefix.*;
 
 public class LoginControllerHandler extends ControllerHandler {
-
-
-
-
 
     public LoginControllerHandler(Controller controller, Network network) {
         super(controller, network);
@@ -48,11 +42,12 @@ public class LoginControllerHandler extends ControllerHandler {
 
                 String response = in.readUTF();
 
-                String[] responseParts = response.split("\\s+", 2);
+                String[] responseParts = response.split("\\s+", 3);
 
                 if (responseParts[0].equals(AUTH_OK_CMD_PREFIX)) {
                     username = responseParts[1];
-                    System.out.println("Пользователь вошел под именем: " + username);
+                    id=Integer.parseInt(responseParts[2]);
+                    System.out.println("Пользователь вошел под именем: " + username + " Id=" + id);
 
                     return Optional.of(username);
                 }

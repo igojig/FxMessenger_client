@@ -1,14 +1,15 @@
 package ru.igojig.fxmessenger.controllers;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import ru.igojig.fxmessenger.controllers.handlers.ChatControllerHandler;
-import ru.igojig.fxmessenger.controllers.handlers.ControllerHandler;
 import ru.igojig.fxmessenger.service.Network;
 
+import java.util.List;
 import java.util.Optional;
 
 import static ru.igojig.fxmessenger.prefix.Prefix.*;
@@ -18,6 +19,8 @@ public class ChatController extends Controller {
 
     @FXML
     public Label lblClientName;
+    @FXML
+    public Label lblId;
 
     @FXML
     private Button btnSendMessage;
@@ -42,8 +45,6 @@ public class ChatController extends Controller {
     private String selectedRecipient;
 
     ChatControllerHandler chatControllerHandler;
-
-
 
 
     @FXML
@@ -85,14 +86,14 @@ public class ChatController extends Controller {
     @FXML
     public void onChangeUserName(ActionEvent actionEvent) {
         TextInputDialog dialog = new TextInputDialog("");
-//        dialog.setTitle("lh;h;jkh;jk");
-//        dialog.setHeaderText("Look, a Text Input Dialog");
+        dialog.setTitle("Пользователь: " + username + " id=" + id);
+        dialog.setHeaderText("Введите новое имя пользователя");
         dialog.setContentText("Enter new Username:");
 
         Optional<String> result = dialog.showAndWait();
-        if(result.isPresent()){
-            String newUsername=result.get().strip();
-            if(newUsername.isEmpty()){
+        if (result.isPresent()) {
+            String newUsername = result.get().strip();
+            if (newUsername.isEmpty()) {
                 return;
             }
             System.out.println("Запрос на изменение имени: " + newUsername);
@@ -104,16 +105,20 @@ public class ChatController extends Controller {
     public void onSendAction(ActionEvent actionEvent) {
 
         String message = txtMessage.getText().strip();
+        if (!message.isEmpty()) {
+
 //        appendMessage(text);
-        if (selectedRecipient != null) {
-            chatControllerHandler.sendPrivateMessage(message, selectedRecipient);
+            if (selectedRecipient != null) {
+                chatControllerHandler.sendPrivateMessage(message, selectedRecipient);
 //            netWork.sendPrivateMessage(message, selectedRecipient);
-        } else {
-            chatControllerHandler.sendMessage(message);
+            } else {
+                chatControllerHandler.sendMessage(message);
 //            netWork.sendMessage(message);
+            }
         }
         txtMessage.clear();
         txtMessage.requestFocus();
+
     }
 
 
@@ -131,7 +136,8 @@ public class ChatController extends Controller {
 
     public void updateClientName(String name) {
         lblClientName.setText(name);
-        username=name;
+        lblId.setText("Id=" + id);
+        username = name;
     }
 
 
@@ -163,13 +169,11 @@ public class ChatController extends Controller {
         lstUsers.getItems().clear();
 
 
-
-        if(arrUsers[1].startsWith("+")){
+        if (arrUsers[1].startsWith("+")) {
             // если это мы, то не пишем
-            if(!username.equals(arrUsers[1].substring(1)))
+            if (!username.equals(arrUsers[1].substring(1)))
                 appendMessage("Подключился: " + arrUsers[1].substring(1));
-        }
-        else {
+        } else {
             appendMessage("Отключился: " + arrUsers[1].substring(1));
         }
 
@@ -187,7 +191,7 @@ public class ChatController extends Controller {
         chatControllerHandler = new ChatControllerHandler(this, network);
     }
 
-    public void startReadCycle(){
+    public void startReadCycle() {
         chatControllerHandler.startReadCycle();
     }
 
@@ -203,7 +207,21 @@ public class ChatController extends Controller {
         updateUserCount();
     }
 
-    public void stop(){
+    public void stop() {
         chatControllerHandler.stopReadCycle();
+    }
+
+    public ObservableList<CharSequence> getMsgHistory() {
+        return txtAreaMessages.getParagraphs();
+    }
+
+    public void setMsgHistory(List<String> stringList){
+        for (String s : stringList) {
+            if(!s.isBlank()) {
+                txtAreaMessages.appendText(s);
+                txtAreaMessages.appendText("\n");
+            }
+        }
+        updateMessageCount();
     }
 }
