@@ -1,6 +1,7 @@
 module ru.igojig.fxmesseger {
     requires javafx.controls;
     requires javafx.fxml;
+    requires lombok;
 
 
     opens ru.igojig.fxmessenger to javafx.fxml;

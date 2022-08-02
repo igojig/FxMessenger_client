@@ -1,12 +1,9 @@
 package ru.igojig.fxmessenger.file;
 
-import javafx.collections.ObservableList;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class MyFile {
 
@@ -19,7 +16,7 @@ public class MyFile {
         this.filename = String.format("h_%04d.txt", id);
     }
 
-    public void write(ObservableList<CharSequence> list) {
+    public void write(List<CharSequence> list) {
 
 
         try (FileWriter fileWriter = new FileWriter(filename)) {
@@ -34,7 +31,7 @@ public class MyFile {
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Ну удалось записать историю: " + filename);
+            System.out.println("Не удалось записать историю: " + filename);
         }
 
     }
@@ -51,6 +48,7 @@ public class MyFile {
             int numLines = Integer.parseInt(l.readLine());
 //            System.out.println(numLines);
 
+            //TODO - проверить!!!! - плучаются null строки
             int from = numLines <= LAST_LINES_COUNT ? 0 : numLines - LAST_LINES_COUNT;
 
             while (l.getLineNumber() < from) {
