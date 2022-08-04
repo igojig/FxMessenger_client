@@ -1,13 +1,18 @@
 package ru.igojig.fxmessenger.exchanger;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
 import ru.igojig.fxmessenger.model.User;
 
-public class Exchanger {
-    User user;
-    String message;
+import java.io.Serializable;
 
-    public Exchanger(User user, String message) {
-        this.user = user;
-        this.message = message;
-    }
+@ToString
+@AllArgsConstructor
+@Getter
+public class Exchanger implements Serializable {
+    String command;
+    String message;
+    User user;
+
 }

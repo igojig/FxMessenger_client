@@ -1,8 +1,9 @@
 package ru.igojig.fxmessenger.service;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import ru.igojig.fxmessenger.exchanger.Exchanger;
+import ru.igojig.fxmessenger.model.User;
+
+import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;
 
@@ -26,6 +27,9 @@ public class Network {
     private Socket socket;
     private DataOutputStream out;
     private DataInputStream in;
+
+    ObjectOutputStream objectOutputStream;
+    ObjectInputStream objectInputStream;
 
 //    private Thread readThread;
 //    private Thread sendThread;
@@ -104,6 +108,9 @@ public class Network {
                 out = new DataOutputStream(socket.getOutputStream());
                 in = new DataInputStream(socket.getInputStream());
 
+                objectInputStream=new ObjectInputStream(in);
+                objectOutputStream=new ObjectOutputStream((out);
+
                 isConnected = true;
 
             } catch (IOException e) {
@@ -171,11 +178,16 @@ public class Network {
     public void sendMessage(String message) {
         try {
             if (isConnected) {
+                Exchanger exchanger;
                 if (message.startsWith("/")) {
-                    out.writeUTF(String.format("%s", message));
+                    exchanger=new Exchanger(message, null, null);
+                    objectOutputStream.writeObject(exchanger);
+//                    out.writeUTF(String.format("%s", message));
                 } else {
-                    out.writeUTF(String.format("%s %s", CLIENT_MSG_CMD_PREFIX, message));
-                    out.flush();
+                    exchanger=new Exchanger(CLIENT_MSG_CMD_PREFIX, message, user);
+                    objectOutputStream.writeObject(exchanger);
+//                    out.writeUTF(String.format("%s %s", CLIENT_MSG_CMD_PREFIX, message));
+//                    out.flush();
                 }
             }
         } catch (IOException e) {
@@ -187,8 +199,12 @@ public class Network {
     public void sendPrivateMessage(String message, String userName) {
         try {
             if (isConnected) {
-                out.writeUTF(String.format("%s %s %s", PRIVATE_MSG_CMD_PREFIX, userName, message));
-                out.flush();
+
+                Exchanger exchanger=new Exchanger(PRIVATE_MSG_CMD_PREFIX,message, new User(null, userName, null, null));
+                objectOutputStream.writeObject(exchanger);
+
+//                out.writeUTF(String.format("%s %s %s", PRIVATE_MSG_CMD_PREFIX, userName, message));
+//                out.flush();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -200,8 +216,10 @@ public class Network {
     public void sendServiceMessage(String msgType, String message){
         try {
             if (isConnected) {
-                out.writeUTF(String.format("%s %s", msgType, message));
-                out.flush();
+                Exchanger exchanger=new Exchanger(msgType, message, null);
+                objectOutputStream.writeObject(exchanger);
+//                out.writeUTF(String.format("%s %s", msgType, message));
+//                out.flush();
             }
         } catch (IOException e) {
             e.printStackTrace();

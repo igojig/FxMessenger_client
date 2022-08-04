@@ -1,6 +1,7 @@
 package ru.igojig.fxmessenger.controllers.handlers;
 
 import ru.igojig.fxmessenger.controllers.Controller;
+import ru.igojig.fxmessenger.model.User;
 import ru.igojig.fxmessenger.service.Network;
 
 
@@ -8,8 +9,12 @@ import java.io.*;
 
 abstract public class ControllerHandler  {
 
-    public static String username;
-    public static int id;
+    // наш User
+    public static User user;
+//    public static String username;
+//    public static int id;
+
+
 
     protected Controller controller;
     protected Network network;

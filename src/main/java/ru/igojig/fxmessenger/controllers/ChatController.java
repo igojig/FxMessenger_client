@@ -6,7 +6,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Callback;
 import ru.igojig.fxmessenger.controllers.handlers.ChatControllerHandler;
+import ru.igojig.fxmessenger.model.User;
 import ru.igojig.fxmessenger.service.Network;
 
 import java.util.List;
@@ -26,7 +28,7 @@ public class ChatController extends Controller {
     private Button btnSendMessage;
 
     @FXML
-    private ListView<String> lstUsers;
+    private ListView<User> lstUsers;
 
     @FXML
     private TextField txtMessage;
@@ -42,7 +44,7 @@ public class ChatController extends Controller {
 
     private Network network;
 
-    private String selectedRecipient;
+    private User selectedRecipient;
 
     ChatControllerHandler chatControllerHandler;
 
@@ -58,10 +60,24 @@ public class ChatController extends Controller {
         //перевод фокуса на наше поле
         Platform.runLater(() -> txtMessage.requestFocus());
 
+
         lstUsers.setCellFactory(lv -> {
-            MultipleSelectionModel<String> selectionModel = lstUsers.getSelectionModel();
-            ListCell<String> cell = new ListCell<>();
-            cell.textProperty().bind(cell.itemProperty());
+            MultipleSelectionModel<User> selectionModel = lstUsers.getSelectionModel();
+            ListCell<User> cell = new ListCell<>(){
+                @Override
+                protected void updateItem(User item, boolean empty) {
+//                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        setText(item.getUsername());
+                    }
+                }
+            };
+            //TODO !!!!!
+//            cell.textProperty().bind(cell.itemProperty().);
+            cell.textProperty().bind(cell.itemProperty().asString());
             cell.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
 //                lstUsers.requestFocus();
                 if (!cell.isEmpty()) {
