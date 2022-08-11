@@ -3,18 +3,22 @@ package ru.igojig.fxmessenger.controllers.handlers;
 import javafx.application.Platform;
 import ru.igojig.fxmessenger.controllers.ChatController;
 import ru.igojig.fxmessenger.controllers.Controller;
+import ru.igojig.fxmessenger.exchanger.ChatObject;
+import ru.igojig.fxmessenger.exchanger.Exchanger;
+import ru.igojig.fxmessenger.exchanger.impl.ChangeUserList;
+import ru.igojig.fxmessenger.exchanger.impl.UserExchanger;
+import ru.igojig.fxmessenger.model.User;
+import ru.igojig.fxmessenger.prefix.Prefix;
 import ru.igojig.fxmessenger.service.Network;
 
 import java.io.IOException;
-import java.net.SocketException;
-
-import static ru.igojig.fxmessenger.prefix.Prefix.*;
 
 public class ChatControllerHandler extends ControllerHandler {
 
     Thread readThread;
 
     volatile boolean isStop = false;
+
 
     public ChatControllerHandler(Controller controller, Network network) {
         super(controller, network);
@@ -25,57 +29,75 @@ public class ChatControllerHandler extends ControllerHandler {
         network.sendMessage(message);
     }
 
-    public void sendPrivateMessage(String message, String userName) {
-        network.sendPrivateMessage(message, userName);
+    public void sendPrivateMessage(String message, User sendToUser) {
+        network.sendPrivateMessage(message, sendToUser);
     }
 
-    public void sendServiceMessage(String msgType, String message) {
-        network.sendServiceMessage(msgType, message);
+    public void sendServiceMessage(Prefix msgType, String message, ChatObject chatObject) {
+        Exchanger exchanger=new Exchanger(msgType, message, chatObject);
+        network.sendServiceMessage(exchanger);
     }
 
     public void startReadCycle() {
         System.out.println("Запускаем поток чтения сообщений");
+
         readThread = new Thread(() -> {
             try {
                 while (!isStop || !readThread.isInterrupted()) {
                     if (network.isConnected()) {
-                        String message = in.readUTF();
-                        String[] messageParts = message.split("\\s+", 3);
-                        switch (messageParts[0]) {
+
+                        Exchanger exchanger= (Exchanger) objectInputStream.readObject();
+
+                        Prefix prefix=exchanger.getCommand();
+                        ChatObject chatObject=exchanger.getChatObject();
+                        ChatController rootController= (ChatController) controller;
+
+                        switch (prefix) {
 
                             // пришел список пользователей
-                            case SERVER_MSG_CMD_PREFIX_LOGGED_USERS -> {
+                            case LOGGED_USERS, CHANGE_USERNAME_NEW_LIST -> {
 //                                Platform.runLater(() -> ((ChatController)controller).appendMessage("Список пользователей изменился!"));
-                                Platform.runLater(() -> ((ChatController) controller).updateUserList(message));
+                                Platform.runLater(() -> rootController.updateUserList((ChangeUserList) chatObject));
                             }
-                            case CHANGE_USERNAME_NEW_LIST -> {
-                                Platform.runLater(() -> ((ChatController) controller).updateUserListFromUpdateUsers(message));
+//                            case CHANGE_USERNAME_NEW_LIST -> {
+//                                Platform.runLater(() -> ((ChatController) controller).updateUserListFromUpdateUsers(message));
+//                            }
+                            case SERVER_MSG -> {
+                                Platform.runLater(() -> rootController.appendMessage(exchanger.getMessage()));
                             }
-                            case SERVER_MSG_CMD_PREFIX -> {
-                                Platform.runLater(() -> ((ChatController) controller).appendMessage( messageParts[1] + " " + messageParts[2]));
-                            }
-                            case CLIENT_MSG_CMD_PREFIX -> {
-                                if(!Controller.username.equals(messageParts[1])) {
-                                    Platform.runLater(() -> ((ChatController) controller).appendMessage(messageParts[1] + ": " + messageParts[2]));
+                            case CLIENT_MSG -> {
+                                if(((UserExchanger)(chatObject)).getUser().getId().equals(Controller.user.getId())) {
+                                    Platform.runLater(() -> rootController.appendMessage( ": " + exchanger.getMessage()));
                                 }
                                 else{
-                                    Platform.runLater(() -> ((ChatController) controller).appendMessage( messageParts[2]));
+                                    Platform.runLater(() -> rootController.appendMessage(
+                                            ((UserExchanger)(chatObject)).getUser().getUsername() + ":" + exchanger.getMessage()));
                                 }
                             }
-                            case PRIVATE_MSG_CMD_PREFIX -> {
-                                Platform.runLater(() -> ((ChatController) controller).appendMessage("Приватное сообшение от: " + messageParts[1] + ": " + messageParts[2]));
+                            case PRIVATE_MSG -> {
+                                Platform.runLater(() -> rootController.appendMessage("Приватное сообшение от: "
+                                        + ((UserExchanger)(chatObject)).getUser().getUsername() +
+                                        ": " + exchanger.getMessage()));
                             }
                             case CHANGE_USERNAME_OK -> {
-                                Platform.runLater(() -> ((ChatController) controller).appendMessage("Новое имя пользователя: " + messageParts[1]));
-                                Platform.runLater(() -> ((ChatController) controller).updateClientName(messageParts[1]));
+                                Platform.runLater(() -> rootController.appendMessage("Новое имя пользователя: " +
+                                        ((UserExchanger)chatObject).getUser().getUsername()));
+                                Platform.runLater(() -> rootController.updateClientName(((UserExchanger)chatObject).getUser()));
                             }
                             case CHANGE_USERNAME_ERR -> {
-                                Platform.runLater(() -> ((ChatController) controller).appendMessage("Ошибка смены имени пользователя:"));
-                                Platform.runLater(() -> ((ChatController) controller).appendMessage(message));
-                                System.out.println("Ошибка смены имени пользователя: " + message);
+                                Platform.runLater(() -> rootController.appendMessage("Ошибка смены имени пользователя:"));
+//                                Platform.runLater(() -> ((ChatController) controller).appendMessage(exchanger.getMessage()));
+                                System.out.println("Ошибка смены имени пользователя: " + exchanger);
+                            }
+                            case PRIVATE_MSG_ERR -> {
+                                User user =((UserExchanger)chatObject).getUser();
+                                Platform.runLater(() -> rootController.appendMessage("Пользователь: " + user.getUsername() + " не найден"));
+                                System.out.println("ПОльзователь не найден: " + user);
+
                             }
                             default -> {
-                                Platform.runLater(() -> ((ChatController) controller).appendMessage(message));
+                                Platform.runLater(() -> rootController.appendMessage("Неизвестный тип сообщения: " + exchanger.getMessage()));
+                                System.out.println("Неизвестный тип сообщения: " + exchanger);
                             }
 
                         }
@@ -92,6 +114,8 @@ public class ChatControllerHandler extends ControllerHandler {
             catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("Сообшение от сервера не прочитано");
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
             }
         });
         readThread.start();

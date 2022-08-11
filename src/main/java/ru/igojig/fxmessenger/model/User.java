@@ -9,19 +9,18 @@ import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
-@ToString
-@EqualsAndHashCode
+
 public class User implements Serializable {
     @Serial
     private static final long serialVersionUID = -1584943797365343078L;
 
     Long id;
 
-    @EqualsAndHashCode.Exclude
+//    @EqualsAndHashCode.Exclude
     String username;
-    @EqualsAndHashCode.Exclude
+//    @EqualsAndHashCode.Exclude
     String login;
-    @EqualsAndHashCode.Exclude
+//    @EqualsAndHashCode.Exclude
     String password;
+
 }

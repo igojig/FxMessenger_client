@@ -21,15 +21,19 @@ abstract public class ControllerHandler  {
     protected DataInputStream in;
     protected DataOutputStream out;
 
-    ObjectInputStream objectInputStream;
-    ObjectOutputStream objectOutputStream;
+    static ObjectInputStream objectInputStream;
+    static ObjectOutputStream objectOutputStream;
 
     public ControllerHandler(Controller controller, Network network) {
         this.controller = controller;
         this.network=network;
 
-        in=network.getInputStream();
-        out=network.getOutputStream();
+//        in=network.getInputStream();
+//        out=network.getOutputStream();
+
+      objectInputStream=network.getObjectInputStream();
+      objectOutputStream=network.getObjectOutputStream();
+
 //
 //        try {
 //            objectInputStream=new ObjectInputStream(in);

@@ -2,6 +2,7 @@ package ru.igojig.fxmessenger.controllers.handlers;
 
 import ru.igojig.fxmessenger.controllers.Controller;
 import ru.igojig.fxmessenger.exchanger.Exchanger;
+import ru.igojig.fxmessenger.exchanger.impl.UserExchanger;
 import ru.igojig.fxmessenger.model.User;
 import ru.igojig.fxmessenger.service.Network;
 
@@ -25,14 +26,17 @@ public class LoginControllerHandler extends ControllerHandler {
             System.out.println("Клиент не подключен к серверу");
             return Optional.empty();
         }
+        objectOutputStream=network.getObjectOutputStream();
+        objectInputStream=network.getObjectInputStream();
 
-        Exchanger exchanger=null;
+        Exchanger exchanger = null;
         //команда аутентификации
 //        sendMessage(AUTH_CMD_PREFIX + " " + login + " " + password);
         try {
 //            out.writeUTF(String.format("%s %s %s", AUTH_CMD_PREFIX, login, password));
-            exchanger=new Exchanger(AUTH_CMD_PREFIX, null, new User(null, null, login, password));
+            exchanger = new Exchanger(AUTH_REQUEST, null, new UserExchanger(new User(null, null, login, password)));
             objectOutputStream.writeObject(exchanger);
+//            objectOutputStream.flush();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -45,20 +49,20 @@ public class LoginControllerHandler extends ControllerHandler {
 
 
 //                String response = in.readUTF();
-                exchanger=(Exchanger) objectInputStream.readObject();
+                exchanger = (Exchanger) objectInputStream.readObject();
 
 //                String[] responseParts = response.split("\\s+", 3);
 
-                if (exchanger.getCommand().equals(AUTH_OK_CMD_PREFIX)) {
+                if (exchanger.getCommand() == AUTH_OK) {
 //                    username = responseParts[1];
 //                    id=Integer.parseInt(responseParts[2]);
-                    user=exchanger.getUser();
+                    user = ((UserExchanger) (exchanger.getChatObject())).getUser();
 
                     System.out.println("Пользователь вошел под именем: " + user);
 
                     return Optional.of(user);
                 }
-                if (exchanger.getCommand().equals(AUTH_ERR_CMD_PREFIX)) {
+                if (exchanger.getCommand() == AUTH_ERR) {
                     System.out.println("Ошибка авторизации: " + exchanger.getMessage());
                     return Optional.empty();
                 }
