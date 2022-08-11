@@ -1,6 +1,9 @@
 package ru.igojig.fxmessenger.controllers.handlers;
 
 import ru.igojig.fxmessenger.controllers.Controller;
+import ru.igojig.fxmessenger.exchanger.Exchanger;
+import ru.igojig.fxmessenger.exchanger.impl.UserExchanger;
+import ru.igojig.fxmessenger.model.User;
 import ru.igojig.fxmessenger.service.Network;
 
 import java.io.IOException;
@@ -16,23 +19,28 @@ public class LoginControllerHandler extends ControllerHandler {
     }
 
 
-    public Optional<String> logIn(String login, String password) {
+    public Optional<User> logIn(String login, String password) {
 
 
         if (!network.isConnected()) {
             System.out.println("Клиент не подключен к серверу");
             return Optional.empty();
         }
+        objectOutputStream=network.getObjectOutputStream();
+        objectInputStream=network.getObjectInputStream();
 
-
+        Exchanger exchanger = null;
         //команда аутентификации
 //        sendMessage(AUTH_CMD_PREFIX + " " + login + " " + password);
         try {
-            out.writeUTF(String.format("%s %s %s", AUTH_CMD_PREFIX, login, password));
+//            out.writeUTF(String.format("%s %s %s", AUTH_CMD_PREFIX, login, password));
+            exchanger = new Exchanger(AUTH_REQUEST, null, new UserExchanger(new User(null, null, login, password)));
+            objectOutputStream.writeObject(exchanger);
+//            objectOutputStream.flush();
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Ошибка отправки команды начала авторизации: " + String.format("%s %s %s", AUTH_CMD_PREFIX, login, password));
+            System.out.println("Ошибка отправки команды начала авторизации: " + exchanger);
             return Optional.empty();
         }
 
@@ -40,19 +48,22 @@ public class LoginControllerHandler extends ControllerHandler {
             while (true) {
 
 
-                String response = in.readUTF();
+//                String response = in.readUTF();
+                exchanger = (Exchanger) objectInputStream.readObject();
 
-                String[] responseParts = response.split("\\s+", 3);
+//                String[] responseParts = response.split("\\s+", 3);
 
-                if (responseParts[0].equals(AUTH_OK_CMD_PREFIX)) {
-                    username = responseParts[1];
-                    id=Integer.parseInt(responseParts[2]);
-                    System.out.println("Пользователь вошел под именем: " + username + " Id=" + id);
+                if (exchanger.getCommand() == AUTH_OK) {
+//                    username = responseParts[1];
+//                    id=Integer.parseInt(responseParts[2]);
+                    user = ((UserExchanger) (exchanger.getChatObject())).getUser();
 
-                    return Optional.of(username);
+                    System.out.println("Пользователь вошел под именем: " + user);
+
+                    return Optional.of(user);
                 }
-                if (responseParts[0].equals(AUTH_ERR_CMD_PREFIX)) {
-                    System.out.println("Ошибка авторизации: " + response);
+                if (exchanger.getCommand() == AUTH_ERR) {
+                    System.out.println("Ошибка авторизации: " + exchanger.getMessage());
                     return Optional.empty();
                 }
 //                if(responseParts[0].equals(CMD_SHUT_DOWN_CLIENT)){
@@ -60,7 +71,7 @@ public class LoginControllerHandler extends ControllerHandler {
 //                    Platform.exit();
 //                }
 
-                System.out.println(response);
+//                System.out.println(response);
             }
 
 
@@ -68,11 +79,11 @@ public class LoginControllerHandler extends ControllerHandler {
             e.printStackTrace();
             System.out.println("Ошибка при аутентификации");
             return Optional.empty();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
 
     }
-
-
 
 }
 

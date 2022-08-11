@@ -1,6 +1,13 @@
 package ru.igojig.fxmessenger.controllers;
 
+import ru.igojig.fxmessenger.model.User;
+
 public abstract class Controller {
-    public static String username;
-    public static int id;
+
+    // наш User
+
+    public static User user;
+
+//    public static String username;
+//    public static int id;
 }

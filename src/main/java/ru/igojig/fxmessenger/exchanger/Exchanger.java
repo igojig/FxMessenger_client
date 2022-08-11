@@ -1,13 +1,24 @@
 package ru.igojig.fxmessenger.exchanger;
 
-import ru.igojig.fxmessenger.model.User;
+import lombok.*;
+import ru.igojig.fxmessenger.prefix.Prefix;
 
-public class Exchanger {
-    User user;
-    String message;
+import java.io.Serial;
+import java.io.Serializable;
 
-    public Exchanger(User user, String message) {
-        this.user = user;
-        this.message = message;
-    }
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Exchanger implements Serializable {
+    @Serial
+    private static final long serialVersionUID= -3079205955494740913L;
+
+    private Prefix command;
+    private String message;
+
+    private ChatObject chatObject;
+
+
+
+
 }

@@ -11,7 +11,7 @@ public class MyFile {
 
     private final String filename;
 
-    public MyFile(int id) {
+    public MyFile(long id) {
 //        this.filename = "h_" + id + ".txt";
         this.filename = String.format("h_%04d.txt", id);
     }

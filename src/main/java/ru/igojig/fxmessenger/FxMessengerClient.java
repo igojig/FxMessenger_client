@@ -81,13 +81,13 @@ public class FxMessengerClient extends Application {
     }
 
     public void showChat(){
-        myFile = new MyFile(Controller.id);
+        myFile = new MyFile(Controller.user.getId());
 //        mainStage.hide();
         chatController.startReadCycle();
         mainStage.setScene(sceneChat);
         mainStage.setTitle("Наш чат");
         chatController.setMsgHistory(myFile.read());
-        chatController.updateClientName(Controller.username);
+        chatController.updateClientName(Controller.user);
         mainStage.show();
 //        network.waitMessage(chatController);
     }
@@ -95,7 +95,7 @@ public class FxMessengerClient extends Application {
     @Override
     public void stop() throws Exception {
         //  если никто не авторизовался или зарегистрировался
-        if(Controller.id!=0) {
+        if(Controller.user!=null) {
             myFile.write(chatController.getMsgHistory());
 //            myFile.read();
         }

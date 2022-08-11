@@ -9,6 +9,7 @@ import ru.igojig.fxmessenger.FxMessengerClient;
 import ru.igojig.fxmessenger.controllers.handlers.ControllerHandler;
 import ru.igojig.fxmessenger.controllers.handlers.LoginControllerHandler;
 import ru.igojig.fxmessenger.controllers.handlers.RegisterControllerHandler;
+import ru.igojig.fxmessenger.model.User;
 import ru.igojig.fxmessenger.service.Network;
 
 import java.util.Optional;
@@ -55,6 +56,7 @@ public class LogInController extends Controller{
     }
 
 
+
     @FXML
     public void logIn(ActionEvent actionEvent) {
 
@@ -63,14 +65,17 @@ public class LogInController extends Controller{
         String password=txtPassword.getText().strip();
 
 //        boolean response = network.authorize(this, login, password);
-        Optional<String> username =loginControllerHandler.logIn(login, password);
-        if(username.isEmpty()){
+        Optional<User> user =loginControllerHandler.logIn(login, password);
+        if(user.isEmpty()){
             System.out.println("Ошибка авторизации ");
         }
         else {
             //открыввем чат
-            Controller.username =username.get();
-            Controller.id=ControllerHandler.id;
+//            Controller.username =username.get();
+//            Controller.id=ControllerHandler.id;
+
+            Controller.user=ControllerHandler.user;
+
             System.out.println("Открываем чат");
             fxMessengerClient.showChat();
         }
@@ -102,15 +107,18 @@ public class LogInController extends Controller{
         }
 
 //        boolean result= network.registerNewUser(login, password, username);
-        Optional<String> user=registerControllerHandler.register(login, password, username);
+        Optional<User> user=registerControllerHandler.register(login, password, username);
 
         if(user.isEmpty()){
             System.out.println("Ошибка авторизации ");
         }
         else {
 //            network.setUserName(user.get());
-            Controller.username =user.get();
-            Controller.id= ControllerHandler.id;
+//            Controller.username =user.get();
+//            Controller.id= ControllerHandler.id;
+
+            Controller.user=ControllerHandler.user;
+
             //открыввем чат
             System.out.println("Открываем чат");
             fxMessengerClient.showChat();
@@ -126,8 +134,8 @@ public class LogInController extends Controller{
         registerControllerHandler=new RegisterControllerHandler(this, network);
     }
 
-    public String getUserName(){
-        return username;
-    }
+//    public String getUserName(){
+//        return username;
+//    }
 
 }
