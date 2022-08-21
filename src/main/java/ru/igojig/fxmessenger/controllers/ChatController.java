@@ -8,7 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import ru.igojig.fxmessenger.controllers.handlers.ChatControllerHandler;
-import ru.igojig.fxmessenger.exchanger.impl.ChangeUserList;
+import ru.igojig.fxmessenger.exchanger.impl.UserListExchanger;
 import ru.igojig.fxmessenger.exchanger.impl.UserExchanger;
 import ru.igojig.fxmessenger.model.User;
 import ru.igojig.fxmessenger.service.Network;
@@ -227,19 +227,19 @@ public class ChatController extends Controller {
 
 //    }
 
-    public void updateUserList(ChangeUserList changeUserList) {
+    public void updateUserList(UserListExchanger userListExchanger) {
 //        String[] arrUsers = users.split("\\s+");
         lstUsers.getItems().clear();
 
-        ChangeUserList.Mode mode= changeUserList.getMode();
+        UserListExchanger.Mode mode= userListExchanger.getMode();
 
-        if(mode== ChangeUserList.Mode.ADD){
-            appendMessage("Подключился: " + changeUserList.getChangedUser().getUsername());
+        if(mode== UserListExchanger.Mode.ADD){
+            appendMessage("Подключился: " + userListExchanger.getChangedUser().getUsername());
         }
-        if(mode == ChangeUserList.Mode.REMOVE){
-            appendMessage("Отключился: " + changeUserList.getChangedUser().getUsername());
+        if(mode == UserListExchanger.Mode.REMOVE){
+            appendMessage("Отключился: " + userListExchanger.getChangedUser().getUsername());
         }
-        if(mode == ChangeUserList.Mode.CHANGE_NAME){
+        if(mode == UserListExchanger.Mode.CHANGE_NAME){
             //???
         }
 
@@ -252,7 +252,7 @@ public class ChatController extends Controller {
 //            appendMessage("Отключился: " + arrUsers[1].substring(1));
 //        }
 
-        for(User u: changeUserList.getUserList() ){
+        for(User u: userListExchanger.getUserList() ){
             lstUsers.getItems().add(u);
         }
 
@@ -314,5 +314,24 @@ public class ChatController extends Controller {
         if(!message.isBlank()) {
             chatControllerHandler.sendMessage(message);
         }
+    }
+
+    public void setUserHistory(List<String> historyList) {
+        for (String s : historyList) {
+            if(!s.isBlank()) {
+                txtAreaMessages.appendText(s);
+                txtAreaMessages.appendText("\n");
+            }
+        }
+        updateMessageCount();
+    }
+
+    public void saveHistory() {
+
+        chatControllerHandler.saveHistory(txtAreaMessages.getParagraphs());
+    }
+
+    public User getUser(){
+        return user;
     }
 }

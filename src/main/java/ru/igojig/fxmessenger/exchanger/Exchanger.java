@@ -14,11 +14,14 @@ public class Exchanger implements Serializable {
     private static final long serialVersionUID= -3079205955494740913L;
 
     private Prefix command;
+
     private String message;
 
-    private ChatObject chatObject;
+    private ChatExchanger chatExchanger;
 
-
+    public <T extends ChatExchanger> T getChatExchanger(Class<T> tClass) {
+        return tClass.cast(chatExchanger);
+    }
 
 
 }

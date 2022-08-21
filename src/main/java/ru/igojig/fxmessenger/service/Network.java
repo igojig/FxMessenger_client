@@ -15,7 +15,7 @@ public class Network {
 
 
     // на сколько засыпаем при ожидании подключения к серверу
-    private static final int SLEEP_TIMEOUT = 500;
+    private static final int SLEEP_TIMEOUT = 1000;
 
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 8186;
@@ -30,8 +30,8 @@ public class Network {
     ObjectOutputStream objectOutputStream;
     ObjectInputStream objectInputStream;
 
-//    private Thread readThread;
-//    private Thread sendThread;
+    private Thread inMsgThread;
+    private Thread outMsgThread;
 
     // читаем из этой очереди
 //    ArrayBlockingQueue<String> inMsg=new ArrayBlockingQueue<>(100);
@@ -182,10 +182,12 @@ public class Network {
     }
 
 
-    public void exitClient() throws IOException {
+    public void exitClient(User user) throws IOException {
 
 //        readThread.interrupt();
-        Exchanger exchanger = new Exchanger(END_CLIENT, null, null);
+        Exchanger exchanger = new Exchanger(END_CLIENT, "выходим из чата", new UserExchanger(user));
+
+
         objectOutputStream.reset();
         objectOutputStream.writeObject(exchanger);
 
@@ -225,4 +227,21 @@ public class Network {
     public ObjectInputStream getObjectInputStream() {
         return objectInputStream;
     }
+
+    public <T> T read(){
+        try {
+            return (T)objectInputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public <T> T readObject() throws IOException, ClassNotFoundException {
+            return (T)objectInputStream.readObject();
+    }
+
+    public <T>void writeObject(T t) throws IOException {
+            objectOutputStream.writeObject(t);
+    }
+
 }

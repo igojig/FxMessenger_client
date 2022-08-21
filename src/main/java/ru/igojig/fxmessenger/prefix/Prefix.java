@@ -3,7 +3,7 @@ package ru.igojig.fxmessenger.prefix;
 
 import java.io.Serializable;
 
-public enum Prefix implements Serializable {
+public enum Prefix  {
     AUTH_REQUEST,
     AUTH_OK,
     AUTH_ERR,
@@ -29,7 +29,12 @@ public enum Prefix implements Serializable {
     CHANGE_USERNAME_OK,
     CHANGE_USERNAME_ERR,
 
-    CHANGE_USERNAME_NEW_LIST
+    CHANGE_USERNAME_NEW_LIST,
+
+    HISTORY_REQUEST,
+    HISTORY_SAVE,
+    HISTORY_LOAD,
+
 
 
 }

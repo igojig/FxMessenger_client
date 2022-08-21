@@ -93,7 +93,7 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
             <items>
-              <MenuItem fx:id="menuEditDeleteHistory" mnemonicParsing="false" onAction="#menuEditDeleteHistoryAction" text="Delete history" />
+              <MenuItem fx:id="menuEditDeleteHistory" mnemonicParsing="false" onAction="#menuEditDeleteHistoryAction" text="Delete historyExchanger" />
                   <MenuItem fx:id="menuEditChangeUsername" mnemonicParsing="false" onAction="#onChangeUserName" text="Change Username" />
             </items>
           </Menu>

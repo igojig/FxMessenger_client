@@ -12,6 +12,7 @@ import ru.igojig.fxmessenger.controllers.handlers.RegisterControllerHandler;
 import ru.igojig.fxmessenger.model.User;
 import ru.igojig.fxmessenger.service.Network;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -76,6 +77,8 @@ public class LogInController extends Controller{
 
             Controller.user=ControllerHandler.user;
 
+            loginControllerHandler.requestUserHistory(user.get());
+
             System.out.println("Открываем чат");
             fxMessengerClient.showChat();
         }
@@ -118,6 +121,8 @@ public class LogInController extends Controller{
 //            Controller.id= ControllerHandler.id;
 
             Controller.user=ControllerHandler.user;
+
+            registerControllerHandler.requestUserHistory(user.get());
 
             //открыввем чат
             System.out.println("Открываем чат");
