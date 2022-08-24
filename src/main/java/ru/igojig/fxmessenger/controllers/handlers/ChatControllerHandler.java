@@ -17,14 +17,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatControllerHandler extends ControllerHandler<ChatController> {
+public class ChatControllerHandler<T extends ChatController> extends ControllerHandler<T> {
 
     Thread readThread;
 
     volatile boolean isStop = false;
 
 
-    public ChatControllerHandler(ChatController controller, Network network) {
+    public ChatControllerHandler(T controller, Network network) {
         super(controller, network);
     }
 

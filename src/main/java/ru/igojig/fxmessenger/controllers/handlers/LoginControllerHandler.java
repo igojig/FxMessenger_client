@@ -8,14 +8,15 @@ import ru.igojig.fxmessenger.model.User;
 import ru.igojig.fxmessenger.service.Network;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.FutureTask;
 
 import static ru.igojig.fxmessenger.prefix.Prefix.*;
 
-public class LoginControllerHandler extends ControllerHandler<LogInController> {
+public class LoginControllerHandler<T extends LogInController> extends ControllerHandler<T> {
 
-    public LoginControllerHandler(LogInController controller, Network network) {
+    public LoginControllerHandler(T controller, Network network) {
         super(controller, network);
     }
 

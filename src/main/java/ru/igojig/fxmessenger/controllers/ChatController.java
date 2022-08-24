@@ -48,7 +48,7 @@ public class ChatController extends Controller {
 
     private User selectedRecipient;
 
-    ChatControllerHandler chatControllerHandler;
+    ChatControllerHandler<ChatController> chatControllerHandler;
 
 
     @FXML
@@ -267,7 +267,7 @@ public class ChatController extends Controller {
 
     public void setNetwork(Network network) {
         this.network = network;
-        chatControllerHandler = new ChatControllerHandler(this, network);
+        chatControllerHandler = new ChatControllerHandler<>(this, network);
     }
 
     public void startReadCycle() {

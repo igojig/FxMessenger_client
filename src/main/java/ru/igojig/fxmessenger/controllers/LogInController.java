@@ -43,8 +43,8 @@ public class LogInController extends Controller{
 
     private FxMessengerClient fxMessengerClient;
 
-    LoginControllerHandler loginControllerHandler;
-    RegisterControllerHandler registerControllerHandler;
+    LoginControllerHandler<LogInController> loginControllerHandler;
+    RegisterControllerHandler<LogInController> registerControllerHandler;
 
 
 
@@ -135,8 +135,8 @@ public class LogInController extends Controller{
     public void setNetwork(Network network) {
         this.network = network;
 
-        loginControllerHandler= new LoginControllerHandler(this, network);
-        registerControllerHandler=new RegisterControllerHandler(this, network);
+        loginControllerHandler= new LoginControllerHandler<>(this, network);
+        registerControllerHandler=new RegisterControllerHandler<>(this, network);
     }
 
 //    public String getUserName(){

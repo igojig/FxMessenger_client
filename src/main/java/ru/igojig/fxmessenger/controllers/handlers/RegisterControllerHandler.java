@@ -11,9 +11,9 @@ import java.util.Optional;
 
 import static ru.igojig.fxmessenger.prefix.Prefix.*;
 
-public class RegisterControllerHandler extends ControllerHandler<LogInController> {
+public class RegisterControllerHandler<T extends LogInController> extends ControllerHandler<T> {
 
-    public RegisterControllerHandler(LogInController controller, Network network) {
+    public RegisterControllerHandler(T controller, Network network) {
         super(controller, network);
     }
 
