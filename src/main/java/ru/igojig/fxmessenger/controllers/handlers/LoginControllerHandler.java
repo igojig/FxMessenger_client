@@ -1,23 +1,30 @@
 package ru.igojig.fxmessenger.controllers.handlers;
 
+import javafx.application.Platform;
 import ru.igojig.fxmessenger.controllers.Controller;
 import ru.igojig.fxmessenger.controllers.LogInController;
 import ru.igojig.fxmessenger.exchanger.Exchanger;
 import ru.igojig.fxmessenger.exchanger.impl.UserExchanger;
 import ru.igojig.fxmessenger.model.User;
+import ru.igojig.fxmessenger.prefix.Prefix;
 import ru.igojig.fxmessenger.service.Network;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.FutureTask;
+import java.util.function.Predicate;
 
 import static ru.igojig.fxmessenger.prefix.Prefix.*;
 
 public class LoginControllerHandler<T extends LogInController> extends ControllerHandler<T> {
 
+    Thread readThread;
+    Thread writeThread;
+
     public LoginControllerHandler(T controller, Network network) {
         super(controller, network);
+
     }
 
     public Optional<User> logIn(String login, String password) {
@@ -45,7 +52,9 @@ public class LoginControllerHandler<T extends LogInController> extends Controlle
             while (true) {
 //                exchanger = (Exchanger) objectInputStream.readObject();
 
-                exchanger=network.readObject();
+                    exchanger = network.readObject();
+
+
 //                FutureTask<Exchanger> futureTask=new FutureTask<>(()->{
 //                    Exchanger exchan=network.read();
 //                });
@@ -53,7 +62,7 @@ public class LoginControllerHandler<T extends LogInController> extends Controlle
 
                 if (exchanger.getCommand() == AUTH_OK) {
 //                    user = ((UserExchanger) (exchanger.getChatObject())).getUser();
-                    user=exchanger.getChatExchanger(UserExchanger.class).getUser();
+                    user = exchanger.getChatExchanger(UserExchanger.class).getUser();
                     System.out.println("Пользователь вошел под именем: " + user);
                     return Optional.of(user);
                 }
@@ -71,8 +80,6 @@ public class LoginControllerHandler<T extends LogInController> extends Controlle
         }
     }
 }
-
-
 
 
 //

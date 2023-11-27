@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class UserListExchanger implements ChatExchanger, Serializable {
     @Serial
-    private static final long serialVersionUID= -5434044936644418409L;
+    private static final long serialVersionUID= 2466328671669453040L;
 
     private List<User> userList;
     private User changedUser;

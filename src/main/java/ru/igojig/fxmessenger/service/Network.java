@@ -8,6 +8,7 @@ import ru.igojig.fxmessenger.model.User;
 import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import static ru.igojig.fxmessenger.prefix.Prefix.*;
 
@@ -34,7 +35,7 @@ public class Network {
     private Thread outMsgThread;
 
     // читаем из этой очереди
-//    ArrayBlockingQueue<String> inMsg=new ArrayBlockingQueue<>(100);
+//    ArrayBlockingQueue<String> receivedMsg=new ArrayBlockingQueue<>(100);
 
     // пишем в очередь
 //    ArrayBlockingQueue<String> outMsg=new ArrayBlockingQueue<>(100);
@@ -95,6 +96,8 @@ public class Network {
                 objectInputStream =new ObjectInputStream(socket.getInputStream());
                 isConnected = true;
 
+
+
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("Соединение с сервером не установлено");
@@ -128,6 +131,7 @@ public class Network {
 
 
     }
+
 
 
     // Сообщение отклиента -> клиенту
@@ -164,7 +168,7 @@ public class Network {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Приватное сообшение от клиента не отправлено");
+            System.out.println("Приватное сообщение от клиента не отправлено");
         }
     }
 

@@ -143,4 +143,8 @@ public class LogInController extends Controller{
 //        return username;
 //    }
 
+
+    public FxMessengerClient getFxMessengerClient() {
+        return fxMessengerClient;
+    }
 }

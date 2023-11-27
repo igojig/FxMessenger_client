@@ -50,6 +50,11 @@ public class RegisterControllerHandler<T extends LogInController> extends Contro
                     System.out.println("Ошибка регистрации:  " + exchanger.getMessage());
                     return Optional.empty();
                 }
+                if(exchanger.getCommand()==CMD_SHUT_DOWN_CLIENT){
+                    System.out.println("ПРишла команда выключения клиетна. Отключаеися");
+
+
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,6 +1,7 @@
 package ru.igojig.fxmessenger;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -12,15 +13,14 @@ import ru.igojig.fxmessenger.service.Network;
 
 
 import java.io.IOException;
-import java.util.List;
 
 public class FxMessengerClient extends Application {
-    static final String SERVER_NAME="localhost";
-    static final int SERVER_PORT=8186;
+    static final String SERVER_NAME = "localhost";
+    static final int SERVER_PORT = 8186;
 
     private Network network;
 
-    private Stage mainStage;
+    private Stage chatStage;
 
     private Scene sceneChat;
     private Scene sceneLogIn;
@@ -33,7 +33,7 @@ public class FxMessengerClient extends Application {
         network = new Network();
         network.connect();
 
-        mainStage=stage;
+        chatStage = stage;
         FXMLLoader fxmlLoaderChat = new FXMLLoader(FxMessengerClient.class.getResource("main_view_client.fxml"));
         sceneChat = new Scene(fxmlLoaderChat.load(), 800, 600);
         chatController = fxmlLoaderChat.getController();
@@ -44,19 +44,12 @@ public class FxMessengerClient extends Application {
 
         FXMLLoader fxmlLoaderLogIn = new FXMLLoader(FxMessengerClient.class.getResource("login.fxml"));
         sceneLogIn = new Scene(fxmlLoaderLogIn.load(), 645, 266);
-        LogInOrRegisterController=fxmlLoaderLogIn.getController();
+        LogInOrRegisterController = fxmlLoaderLogIn.getController();
         LogInOrRegisterController.setNetwork(network);
 
         stage.setTitle("LogIn");
         stage.setScene(sceneLogIn);
         stage.show();
-
-
-
-
-
-
-
 
 
         LogInOrRegisterController.setFxMessengerClient(this);
@@ -72,21 +65,17 @@ public class FxMessengerClient extends Application {
 //        network.getMainCycle().registerObserver(messegingClient);
 
 
-
-
-
-
     }
 
-    public void showChat(){
+    public void showChat() {
 //        myFile = new MyFile(Controller.user.getId());
 //        mainStage.hide();
         chatController.startReadCycle();
-        mainStage.setScene(sceneChat);
-        mainStage.setTitle("Наш чат");
+        chatStage.setScene(sceneChat);
+        chatStage.setTitle("Наш чат");
 //        chatController.setMsgHistory(myFile.read());
         chatController.updateClientName(Controller.user);
-        mainStage.show();
+        chatStage.show();
 //        network.waitMessage(chatController);
     }
 
@@ -97,7 +86,7 @@ public class FxMessengerClient extends Application {
 //            myFile.write(chatController.getMsgHistory());
 ////            myFile.read();
 //        }
-        if(Controller.user!=null){
+        if (Controller.user != null) {
             chatController.saveHistory();
         }
 
@@ -105,10 +94,11 @@ public class FxMessengerClient extends Application {
         chatController.stop();
         network.exitClient(Controller.user);
         System.out.println("Exit JavaFX");
+        Platform.exit();
     }
 
-    public void shutDown(){
-        mainStage.fireEvent( new WindowEvent(mainStage.getOwner(), WindowEvent.WINDOW_CLOSE_REQUEST));
+    public void shutDown() {
+        chatStage.fireEvent(new WindowEvent(chatStage.getOwner(), WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 
     public static void main(String[] args) {
