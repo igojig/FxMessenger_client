@@ -20,7 +20,6 @@ import static ru.igojig.fxmessenger.prefix.Prefix.*;
 
 public class ChatController extends Controller {
 
-
     @FXML
     public Label lblClientName;
     @FXML
@@ -44,28 +43,21 @@ public class ChatController extends Controller {
     @FXML
     private Label lblMessageCount;
 
-    private Network network;
-
     private User selectedRecipient;
 
-    ChatControllerHandler<ChatController> chatControllerHandler;
-
+    private ChatControllerHandler<ChatController> chatControllerHandler;
 
     @FXML
     public void initialize() {
-//        lstUsers.getItems().addAll("User1", "User2", "User3", "User4");
-
 
         updateUserCount();
         updateMessageCount();
 
-        //перевод фокуса на наше поле
         Platform.runLater(() -> txtMessage.requestFocus());
-
 
         lstUsers.setCellFactory(lv -> {
             MultipleSelectionModel<User> selectionModel = lstUsers.getSelectionModel();
-            ListCell<User> cell = new ListCell<>(){
+            ListCell<User> cell = new ListCell<>() {
                 @Override
                 protected void updateItem(User item, boolean empty) {
                     super.updateItem(item, empty);
@@ -78,7 +70,6 @@ public class ChatController extends Controller {
                 }
             };
 
-//-------------------------------------------------------
             ContextMenu contextMenu = new ContextMenu();
 
             MenuItem menuItemPrivateMsg = new MenuItem();
@@ -99,14 +90,8 @@ public class ChatController extends Controller {
                 System.out.println("Message to all send");
             });
 
-
-
             contextMenu.getItems().addAll(menuItemPrivateMsg, menuItemSendToAll);
-//-------------------------------------------------------------
 
-            //TODO !!!!!
-//            cell.textProperty().bind(cell.itemProperty());
-//            cell.textProperty().bind(cell.itemProperty().asString());
             cell.textProperty().bindBidirectional(cell.idProperty());
             cell.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
 //                lstUsers.requestFocus();
@@ -123,7 +108,6 @@ public class ChatController extends Controller {
                 }
             });
 
-//----------------------------------------------------------------------------
             cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty) -> {
                 if (isNowEmpty) {
                     cell.setContextMenu(null);
@@ -131,20 +115,15 @@ public class ChatController extends Controller {
                     cell.setContextMenu(contextMenu);
                 }
             });
-//-----------------------------------------------------------------------
             return cell;
         });
-
-
-
     }
-
-
 
     @FXML
     public void onChangeUserName(ActionEvent actionEvent) {
         TextInputDialog dialog = new TextInputDialog("");
-        dialog.setTitle("Пользователь: " + user.getUsername() + " id=" + user.getId());
+
+        dialog.setTitle("Пользователь: " + chatControllerHandler.getNetwork().getUser().getUsername() + " id=" + chatControllerHandler.getNetwork().getUser().getId());
         dialog.setHeaderText("Введите новое имя пользователя");
         dialog.setContentText("Enter new Username:");
 
@@ -160,34 +139,26 @@ public class ChatController extends Controller {
         }
     }
 
-
     public void onSendAction(ActionEvent actionEvent) {
 
         String message = txtMessage.getText().strip();
         if (!message.isEmpty()) {
-
-//        appendMessage(text);
             if (selectedRecipient != null) {
-                // себе приватное сообшение не посылаем
-                if(!selectedRecipient.getId().equals(user.getId())) {
+                // себе приватное сообщение не посылаем
+                if (!selectedRecipient.getId().equals(chatControllerHandler.getNetwork().getUser().getId())) {
                     chatControllerHandler.sendPrivateMessage(message, selectedRecipient);
                 }
-
-//            netWork.sendPrivateMessage(message, selectedRecipient);
             } else {
                 chatControllerHandler.sendMessage(message);
-//            netWork.sendMessage(message);
             }
         }
         txtMessage.clear();
         txtMessage.requestFocus();
-
     }
 
-
-    public void appendMessage(String text) {
-        if (!text.isBlank()) {
-            txtAreaMessages.appendText(text + '\n');
+    public void appendMessage(String message) {
+        if (!message.isBlank()) {
+            txtAreaMessages.appendText(message + '\n');
             updateMessageCount();
         }
     }
@@ -198,14 +169,11 @@ public class ChatController extends Controller {
     }
 
     public void updateClientName(User user) {
-        lblClientName.setText(user.getUsername());
-        lblId.setText("Id=" + user.getId());
-        Controller.user = user;
+        lblClientName.setText("User: ["+user.getUsername() + "]");
+        lblId.setText("id=" + user.getId());
     }
 
-
     public void menuFileCloseAction(ActionEvent actionEvent) {
-
         Platform.exit();
     }
 
@@ -222,103 +190,49 @@ public class ChatController extends Controller {
     public void updateUserCount() {
         lblUserCont.setText("Участников: " + lstUsers.getItems().size());
     }
-//    public void setNetwork(Network network) {
-//        this.netWork=network;
-
-//    }
 
     public void updateUserList(UserListExchanger userListExchanger) {
-//        String[] arrUsers = users.split("\\s+");
         lstUsers.getItems().clear();
 
-        UserListExchanger.Mode mode= userListExchanger.getMode();
+        UserListExchanger.Mode mode = userListExchanger.getMode();
 
-        if(mode== UserListExchanger.Mode.ADD){
+        if (mode == UserListExchanger.Mode.ADD) {
             appendMessage("Подключился: " + userListExchanger.getChangedUser().getUsername());
         }
-        if(mode == UserListExchanger.Mode.REMOVE){
+        if (mode == UserListExchanger.Mode.REMOVE) {
             appendMessage("Отключился: " + userListExchanger.getChangedUser().getUsername());
         }
-        if(mode == UserListExchanger.Mode.CHANGE_NAME){
+        if (mode == UserListExchanger.Mode.CHANGE_NAME) {
             //???
         }
 
-
-//        if (arrUsers[1].startsWith("+")) {
-//            // если это мы, то не пишем
-//            if (!username.equals(arrUsers[1].substring(1)))
-//                appendMessage("Подключился: " + arrUsers[1].substring(1));
-//        } else {
-//            appendMessage("Отключился: " + arrUsers[1].substring(1));
-//        }
-
-        for(User u: userListExchanger.getUserList() ){
+        for (User u : userListExchanger.getUserList()) {
             lstUsers.getItems().add(u);
         }
 
-//        for (int i = 2; i < arrUsers.length; i++) {
-//            lstUsers.getItems().add(arrUsers[i]);
-//        }
         lstUsers.refresh();
-//        lblUserCont.setText("Участников: " + lstUsers.getItems().size());
         updateUserCount();
     }
 
-
     public void setNetwork(Network network) {
-        this.network = network;
         chatControllerHandler = new ChatControllerHandler<>(this, network);
     }
 
-    public void startReadCycle() {
-        chatControllerHandler.startReadCycle();
-    }
-//
-//    public void updateUserListFromUpdateUsers(String message) {
-//        String[] arrUsers = message.split("\\s+");
-//        lstUsers.getItems().clear();
-//
-//        for (int i = 1; i < arrUsers.length; i++) {
-//            lstUsers.getItems().add(arrUsers[i]);
-//        }
-//        lstUsers.refresh();
-////        lblUserCont.setText("Участников: " + lstUsers.getItems().size());
-//        updateUserCount();
-//    }
-
-    public void stop() {
-        chatControllerHandler.stopReadCycle();
-    }
-
-    public ObservableList<CharSequence> getMsgHistory() {
-        return txtAreaMessages.getParagraphs();
-    }
-
-    public void setMsgHistory(List<String> stringList){
-        for (String s : stringList) {
-            if(!s.isBlank()) {
-                txtAreaMessages.appendText(s);
-                txtAreaMessages.appendText("\n");
-            }
-        }
-        updateMessageCount();
-    }
-
-    public void sendPrivateMessageFromContextMenu(User sendToUser, String message){
-        if(!message.isBlank()) {
+    public void sendPrivateMessageFromContextMenu(User sendToUser, String message) {
+        if (!message.isBlank()) {
             chatControllerHandler.sendPrivateMessage(message, sendToUser);
         }
     }
 
-    public void sendMessageToAllFromContextMenu(String message){
-        if(!message.isBlank()) {
+    public void sendMessageToAllFromContextMenu(String message) {
+        if (!message.isBlank()) {
             chatControllerHandler.sendMessage(message);
         }
     }
 
     public void setUserHistory(List<String> historyList) {
         for (String s : historyList) {
-            if(!s.isBlank()) {
+            if (!s.isBlank()) {
                 txtAreaMessages.appendText(s);
                 txtAreaMessages.appendText("\n");
             }
@@ -327,11 +241,18 @@ public class ChatController extends Controller {
     }
 
     public void saveHistory() {
-
         chatControllerHandler.saveHistory(txtAreaMessages.getParagraphs());
     }
 
-    public User getUser(){
-        return user;
+    public void subscribe() {
+        chatControllerHandler.subscribe();
+    }
+
+    public void requestLoggedUsers() {
+        chatControllerHandler.requestLoggedUsers();
+    }
+
+    public void requestHistory(User user) {
+        chatControllerHandler.requestUserHistory(user);
     }
 }

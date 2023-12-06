@@ -1,5 +1,8 @@
 package ru.igojig.fxmessenger.service;
 
+import lombok.Getter;
+import lombok.Setter;
+import ru.igojig.fxmessenger.controllers.handlers.ControllerHandler;
 import ru.igojig.fxmessenger.exchanger.Exchanger;
 import ru.igojig.fxmessenger.exchanger.impl.UserExchanger;
 import ru.igojig.fxmessenger.model.User;
@@ -8,12 +11,13 @@ import ru.igojig.fxmessenger.model.User;
 import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import static ru.igojig.fxmessenger.prefix.Prefix.*;
 
 public class Network {
-
 
     // на сколько засыпаем при ожидании подключения к серверу
     private static final int SLEEP_TIMEOUT = 1000;
@@ -25,29 +29,17 @@ public class Network {
     private final int port;
 
     volatile private Socket socket;
-//    private DataOutputStream out;
-//    private DataInputStream in;
+
+    private final List<ControllerHandler<?>> handlerList;
+
+    @Getter
+    @Setter
+    private User user;
 
     ObjectOutputStream objectOutputStream;
     ObjectInputStream objectInputStream;
 
-    private Thread inMsgThread;
-    private Thread outMsgThread;
-
-    // читаем из этой очереди
-//    ArrayBlockingQueue<String> receivedMsg=new ArrayBlockingQueue<>(100);
-
-    // пишем в очередь
-//    ArrayBlockingQueue<String> outMsg=new ArrayBlockingQueue<>(100);
-
-//    List<Listener> listenerList=new ArrayList<>();
-//    List<Sender> senderList=new ArrayList<>();
-//    List<ControllerHandler> controllerHandlerList=new ArrayList<>();
-//
-//    List<Reader> readerList=new ArrayList<>();
-
-
-//    private String userName;
+    private Thread readThread;
 
     // флаг установки соединения
     volatile private boolean isConnected = false;
@@ -56,19 +48,16 @@ public class Network {
         this.host = host;
         this.port = port;
 
-
-//        messageListenerList = new ArrayList<>();
+        handlerList = new ArrayList<>();
     }
 
     public Network() {
         this(DEFAULT_HOST, DEFAULT_PORT);
     }
 
-
     public void connect() {
         waitConnectionWithServer();
     }
-
 
     private void waitConnectionWithServer() {
 //         ждем пока запуститься сервер
@@ -81,7 +70,7 @@ public class Network {
                     } catch (ConnectException e) {
                         try {
                             Thread.sleep(SLEEP_TIMEOUT);
-                            socket=null;
+                            socket = null;
                         } catch (InterruptedException ex) {
                             System.out.println("Ошибка при создании сокета");
                             throw new RuntimeException(ex);
@@ -89,14 +78,12 @@ public class Network {
                     }
                 }
                 System.out.println("Соединение с сервером установлено");
-//                in=new DataInputStream(socket.getInputStream());
-//                out=new DataOutputStream(socket.getOutputStream());
 
-                objectOutputStream =new ObjectOutputStream(socket.getOutputStream());
-                objectInputStream =new ObjectInputStream(socket.getInputStream());
+                objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                objectInputStream = new ObjectInputStream(socket.getInputStream());
                 isConnected = true;
 
-
+                startReadThread();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -105,66 +92,48 @@ public class Network {
         });
         thread.setDaemon(true);
         thread.start();
-//        try {
-//            thread.join();
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
-//        try {
-//            socket = new Socket(host, port);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-
-//        try {
-////            out = new DataOutputStream(socket.getOutputStream());
-////            in = new DataInputStream(socket.getInputStream());
-//
-//                ous = new ObjectOutputStream(socket.getOutputStream());
-//                ois = new ObjectInputStream(socket.getInputStream());
-//
-//        } catch (Throwable e) {
-//            System.out.println("Ошибка");
-//            throw new RuntimeException(e);
-//        }
-
-
-
     }
 
+    private void startReadThread() {
+        readThread = new Thread(() -> {
+            while (true) {
+                try {
+                    Exchanger exchanger = readObject();
+                    for(int i=0;i<handlerList.size();i++){
+                        handlerList.get(i).consumeMsg(exchanger);
+                    }
 
+                } catch (IOException | ClassNotFoundException e) {
+                    System.out.println("Error in read thread: " + e);
+                    break;
+                }
+            }
+        });
+        readThread.setDaemon(true);
+        readThread.start();
+    }
 
-    // Сообщение отклиента -> клиенту
+    // Сообщение от клиента -> клиенту
     public void sendMessage(String message) {
         try {
             if (isConnected) {
                 Exchanger exchanger;
-//                if (message.startsWith("/")) {
-//                    exchanger=new Exchanger(message, null, null);
-//                    objectOutputStream.writeObject(exchanger);
-////                    out.writeUTF(String.format("%s", message));
-//                } else {
                 exchanger = new Exchanger(CLIENT_MSG, message, null);
                 objectOutputStream.reset();
                 objectOutputStream.writeObject(exchanger);
-//                    out.writeUTF(String.format("%s %s", CLIENT_MSG_CMD_PREFIX, message));
-//                    out.flush();
-//                }
             }
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Сообшение от клиента не отправлено");
+            System.out.println("Сообщение от клиента не отправлено");
         }
     }
 
     public void sendPrivateMessage(String message, User sendToUser) {
         try {
             if (isConnected) {
-
                 Exchanger exchanger = new Exchanger(PRIVATE_MSG, message, new UserExchanger(sendToUser));
                 objectOutputStream.reset();
                 objectOutputStream.writeObject(exchanger);
-
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -181,71 +150,52 @@ public class Network {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Сервисное сообшение от клиента не отправлено");
+            System.out.println("Сервисное сообщение от клиента не отправлено");
         }
     }
 
+    public void exitClient(User user) {
+        if (isConnected) {
+            if(user!=null){
+                Exchanger exchanger = new Exchanger(END_CLIENT, "выходим из чата", new UserExchanger(user));
+                try {
+                    objectOutputStream.reset();
+                    objectOutputStream.writeObject(exchanger);
+                    objectOutputStream.close();
+                    objectInputStream.close();
+                } catch (IOException e) {
+                    System.out.println("ошибка в ExitClient: " + e);
+                }
+            }
+        }
 
-    public void exitClient(User user) throws IOException {
-
-//        readThread.interrupt();
-        Exchanger exchanger = new Exchanger(END_CLIENT, "выходим из чата", new UserExchanger(user));
-
-
-        objectOutputStream.reset();
-        objectOutputStream.writeObject(exchanger);
-
-        objectOutputStream.close();
-        objectInputStream.close();
-
-//        in.close();
-//        out.close();
-        socket.close();
+        if (socket != null) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
-
-//    public String getUserName() {
-//        return userName;
-//    }
-//    public void setUserName(String userName){
-//        this.userName=userName;
-//    }
-
 
     public boolean isConnected() {
         return isConnected;
     }
 
-//
-//    public DataInputStream getInputStream() {
-//        return in;
-//    }
-
-//    public DataOutputStream getOutputStream() {
-//        return out;
-//    }
-
-    public ObjectOutputStream getObjectOutputStream() {
-        return objectOutputStream;
-    }
-
-    public ObjectInputStream getObjectInputStream() {
-        return objectInputStream;
-    }
-
-    public <T> T read(){
-        try {
-            return (T)objectInputStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public <T> T readObject() throws IOException, ClassNotFoundException {
-            return (T)objectInputStream.readObject();
+        return (T) objectInputStream.readObject();
     }
 
-    public <T>void writeObject(T t) throws IOException {
-            objectOutputStream.writeObject(t);
+    public <T> void writeObject(T t) throws IOException {
+        objectOutputStream.reset();
+        objectOutputStream.writeObject(t);
     }
 
+    public void subscribe(ControllerHandler<?> handler) {
+            handlerList.add(handler);
+    }
+
+    public void unsubscribe(ControllerHandler<?> handler) {
+            handlerList.remove(handler);
+    }
 }

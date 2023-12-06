@@ -9,6 +9,7 @@ import javafx.stage.WindowEvent;
 import ru.igojig.fxmessenger.controllers.ChatController;
 import ru.igojig.fxmessenger.controllers.Controller;
 import ru.igojig.fxmessenger.controllers.LogInController;
+import ru.igojig.fxmessenger.model.User;
 import ru.igojig.fxmessenger.service.Network;
 
 
@@ -25,7 +26,7 @@ public class FxMessengerClient extends Application {
     private Scene sceneChat;
     private Scene sceneLogIn;
     private ChatController chatController;
-    private LogInController LogInOrRegisterController;
+    private LogInController logInController;
 
 
     @Override
@@ -44,55 +45,45 @@ public class FxMessengerClient extends Application {
 
         FXMLLoader fxmlLoaderLogIn = new FXMLLoader(FxMessengerClient.class.getResource("login.fxml"));
         sceneLogIn = new Scene(fxmlLoaderLogIn.load(), 645, 266);
-        LogInOrRegisterController = fxmlLoaderLogIn.getController();
-        LogInOrRegisterController.setNetwork(network);
+        logInController = fxmlLoaderLogIn.getController();
+        logInController.setNetwork(network);
 
         stage.setTitle("LogIn");
         stage.setScene(sceneLogIn);
+        logInController.subscribe();
         stage.show();
 
-
-        LogInOrRegisterController.setFxMessengerClient(this);
-
-//        network.waitMessage(chatController);
-
-//        ServiceClient serviceClient=new ServiceClient(null);
-//        LogInClient logInClient=new LogInClient(logInController);
-//        MessegingClient messegingClient=new MessegingClient(chatController);
-//
-//        network.getMainCycle().registerObserver(serviceClient);
-//        network.getMainCycle().registerObserver(logInClient);
-//        network.getMainCycle().registerObserver(messegingClient);
-
+        logInController.setFxMessengerClient(this);
 
     }
 
     public void showChat() {
-//        myFile = new MyFile(Controller.user.getId());
-//        mainStage.hide();
-        chatController.startReadCycle();
+
+
+
         chatStage.setScene(sceneChat);
         chatStage.setTitle("Наш чат");
-//        chatController.setMsgHistory(myFile.read());
-        chatController.updateClientName(Controller.user);
+
+
+        chatController.updateClientName(network.getUser());
+        chatController.subscribe();
+        logInController.unsubscribe();
+
+        chatController.requestLoggedUsers();
+        chatController.requestHistory(network.getUser());
+
         chatStage.show();
-//        network.waitMessage(chatController);
+
     }
 
     @Override
     public void stop() throws Exception {
-        //  если никто не авторизовался или зарегистрировался
-//        if(Controller.user!=null) {
-//            myFile.write(chatController.getMsgHistory());
-////            myFile.read();
-//        }
-        if (Controller.user != null) {
+
+        if (network.getUser() != null) {
             chatController.saveHistory();
         }
 
-
-        chatController.stop();
-        network.exitClient(Controller.user);
+        network.exitClient(network.getUser());
         System.out.println("Exit JavaFX");
         Platform.exit();
     }

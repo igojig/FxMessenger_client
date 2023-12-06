@@ -6,17 +6,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import ru.igojig.fxmessenger.FxMessengerClient;
-import ru.igojig.fxmessenger.controllers.handlers.ControllerHandler;
 import ru.igojig.fxmessenger.controllers.handlers.LoginControllerHandler;
-import ru.igojig.fxmessenger.controllers.handlers.RegisterControllerHandler;
-import ru.igojig.fxmessenger.model.User;
 import ru.igojig.fxmessenger.service.Network;
 
-import java.util.List;
-import java.util.Optional;
 
-
-public class LogInController extends Controller{
+public class LogInController extends Controller {
 
 
     @FXML
@@ -39,112 +33,76 @@ public class LogInController extends Controller{
     @FXML
     public TextField txtRegisterUsername;
 
-    private Network network;
-
     private FxMessengerClient fxMessengerClient;
 
-    LoginControllerHandler<LogInController> loginControllerHandler;
-    RegisterControllerHandler<LogInController> registerControllerHandler;
-
-
+    private LoginControllerHandler<LogInController> loginControllerHandler;
 
 
     @FXML
-    public void initialize(){
-//
-//        loginControllerHandler= new LoginControllerHandler(this, network);
-//        registerControllerHandler=new RegisterControllerHandler(this, network);
+    public void initialize() {
     }
-
 
 
     @FXML
     public void logIn(ActionEvent actionEvent) {
 
 
-        String login=txtLogin.getText().strip();
-        String password=txtPassword.getText().strip();
+        String login = txtLogin.getText().strip();
+        String password = txtPassword.getText().strip();
 
-//        boolean response = network.authorize(this, login, password);
-        Optional<User> user =loginControllerHandler.logIn(login, password);
-        if(user.isEmpty()){
-            System.out.println("Ошибка авторизации ");
-        }
-        else {
-            //открыввем чат
-//            Controller.username =username.get();
-//            Controller.id=ControllerHandler.id;
+        loginControllerHandler.logIn(login, password);
 
-            Controller.user=ControllerHandler.user;
-
-            loginControllerHandler.requestUserHistory(user.get());
-
-            System.out.println("Открываем чат");
-            fxMessengerClient.showChat();
-        }
     }
 
-//    public void setNetwork(Network network) {
-//
-//        this.network = network;
-//    }
 
     public void setFxMessengerClient(FxMessengerClient fxMessengerClient) {
         this.fxMessengerClient = fxMessengerClient;
     }
 
-    public void exitClient(){
+    public void exitClient() {
         fxMessengerClient.shutDown();
+    }
+
+    public void showChat() {
+        System.out.println("Открываем чат");
+        fxMessengerClient.showChat();
     }
 
 
     @FXML
     public void onBtnRegister(ActionEvent actionEvent) {
-        String login=txtRegisterLogin.getText().strip();
-        String password=txtRegisterPassword.getText().strip();
-        String username=txtRegisterUsername.getText().strip();
+        String login = txtRegisterLogin.getText().strip();
+        String password = txtRegisterPassword.getText().strip();
+        String username = txtRegisterUsername.getText().strip();
 
-        if(login.isEmpty() || password.isEmpty() || username.isEmpty()){
+        if (login.isEmpty() || password.isEmpty() || username.isEmpty()) {
             System.out.println("Поля не должны быть пустыми");
             return;
         }
 
-//        boolean result= network.registerNewUser(login, password, username);
-        Optional<User> user=registerControllerHandler.register(login, password, username);
-
-        if(user.isEmpty()){
-            System.out.println("Ошибка авторизации ");
-        }
-        else {
-//            network.setUserName(user.get());
-//            Controller.username =user.get();
-//            Controller.id= ControllerHandler.id;
-
-            Controller.user=ControllerHandler.user;
-
-            registerControllerHandler.requestUserHistory(user.get());
-
-            //открыввем чат
-            System.out.println("Открываем чат");
-            fxMessengerClient.showChat();
-        }
-
+        loginControllerHandler.register(login, password, username);
 
     }
 
     public void setNetwork(Network network) {
-        this.network = network;
+//        this.network = network;
 
-        loginControllerHandler= new LoginControllerHandler<>(this, network);
-        registerControllerHandler=new RegisterControllerHandler<>(this, network);
+        loginControllerHandler = new LoginControllerHandler<>(this, network);
+//        registerControllerHandler=new RegisterControllerHandler<>(this, network);
     }
 
-//    public String getUserName(){
-//        return username;
-//    }
+
 
 
     public FxMessengerClient getFxMessengerClient() {
         return fxMessengerClient;
+    }
+
+    public void subscribe() {
+        loginControllerHandler.subscribe();
+    }
+
+    public void unsubscribe() {
+        loginControllerHandler.unsubscribe();
     }
 }

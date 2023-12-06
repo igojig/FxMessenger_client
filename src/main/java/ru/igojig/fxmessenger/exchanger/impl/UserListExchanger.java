@@ -23,6 +23,4 @@ public class UserListExchanger implements ChatExchanger, Serializable {
         REMOVE,
         CHANGE_NAME
     }
-
-
 }

@@ -20,7 +20,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.igojig.fxmessenger.controllers.ChatController">
+<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.igojig.fxmessenger.controllers.ChatController">
    <center>
       <SplitPane dividerPositions="0.29797979797979796" minHeight="-Infinity" minWidth="-Infinity" BorderPane.alignment="CENTER">
         <items>
@@ -51,10 +51,9 @@
                                  <font>
                                     <Font name="Calibri Bold" size="18.0" />
                                  </font></Label>
-                              <Label fx:id="lblId" text="id">
-                                 <font>
-                                    <Font size="18.0" />
-                                 </font></Label>
+                              <Label text="|" />
+                              <Label fx:id="lblId" text="id" />
+                              <Label text="|" />
                            </items>
                            <opaqueInsets>
                               <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
@@ -93,8 +92,8 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
             <items>
-              <MenuItem fx:id="menuEditDeleteHistory" mnemonicParsing="false" onAction="#menuEditDeleteHistoryAction" text="Delete historyExchanger" />
-                  <MenuItem fx:id="menuEditChangeUsername" mnemonicParsing="false" onAction="#onChangeUserName" text="Change Username" />
+              <MenuItem fx:id="menuEditDeleteHistory" mnemonicParsing="false" onAction="#menuEditDeleteHistoryAction" text="delete history" />
+                  <MenuItem fx:id="menuEditChangeUsername" mnemonicParsing="false" onAction="#onChangeUserName" text="change username" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">

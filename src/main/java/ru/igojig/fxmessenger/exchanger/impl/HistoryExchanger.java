@@ -16,7 +16,7 @@ import java.util.List;
 public class HistoryExchanger implements ChatExchanger, Serializable {
     @Serial
     private static final long serialVersionUID = 5601676629572006971L;
-    List<String> historyList;
+    private List<String> historyList;
 
 
 }
