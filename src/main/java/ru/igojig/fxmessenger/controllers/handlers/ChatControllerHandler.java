@@ -40,11 +40,12 @@ public class ChatControllerHandler<T extends ChatController> extends ControllerH
                     Platform.runLater(() -> controller.appendMessage(
                             (exchanger.getChatExchanger(UserExchanger.class).getUser().getUsername() + ":" + exchanger.getMessage())));
                 }
+//                Platform.runLater(() -> controller.appendMessage(exchanger.getMessage()));
             }
             case PRIVATE_MSG -> {
-                Platform.runLater(() -> controller.appendMessage("Приватное сообщение от: "
-                        + (exchanger.getChatExchanger(UserExchanger.class).getUser().getUsername() +
-                        ": " + exchanger.getMessage())));
+                Platform.runLater(() -> controller.appendMessage("Приватное сообщение от ["
+                        + (exchanger.getChatExchanger(UserExchanger.class).getUser().getUsername() + "]" +
+                        ":" + exchanger.getMessage())));
             }
             case CHANGE_USERNAME_OK -> {
                 Platform.runLater(() -> controller.appendMessage("Новое имя пользователя: " +
@@ -60,12 +61,11 @@ public class ChatControllerHandler<T extends ChatController> extends ControllerH
                 User sendToUser = exchanger.getChatExchanger(UserExchanger.class).getUser();
                 Platform.runLater(() -> controller.appendMessage("Пользователь: " + sendToUser.getUsername() + " не найден"));
                 System.out.println("Пользователь не найден: " + sendToUser);
-
             }
-            case HISTORY_LOAD -> {
+            case CMD_HISTORY_LOAD -> {
                 HistoryExchanger historyExchanger = exchanger.getChatExchanger(HistoryExchanger.class);
+//                Platform.runLater(()->{controller.appendMessage("Загружаем историю сообщений");});
                 Platform.runLater(()->controller.setUserHistory(historyExchanger.getHistoryList()));
-
             }
             default -> {
                 Platform.runLater(() -> controller.appendMessage("Неизвестный тип сообщения: " + exchanger.getMessage()));
@@ -78,21 +78,21 @@ public class ChatControllerHandler<T extends ChatController> extends ControllerH
         network.sendMessage(message);
     }
 
-    public void sendPrivateMessage(String message, User sendToUser) {
-        network.sendPrivateMessage(message, sendToUser);
+    public void sendMessage(String message, User sendToUser) {
+        network.sendMessage(message, sendToUser);
     }
 
-    public void sendServiceMessage(Prefix msgType, String message, ChatExchanger chatExchanger) {
-        Exchanger exchanger = new Exchanger(msgType, message, chatExchanger);
-        network.sendServiceMessage(exchanger);
+    public void sendMessage(Prefix prefix, String message, ChatExchanger chatExchanger) {
+        Exchanger exchanger = new Exchanger(prefix, message, chatExchanger);
+        network.sendMessage(exchanger);
     }
 
     public void saveHistory(ObservableList<CharSequence> userHistory) {
-        List<String> list = new ArrayList<>(userHistory.stream().map(CharSequence::toString).toList());
+        List<String> historyList = new ArrayList<>(userHistory.stream().map(CharSequence::toString).toList());
 
-        Exchanger ex = new Exchanger(Prefix.HISTORY_SAVE, "сохраняем историю", new HistoryExchanger(list));
+        Exchanger response = new Exchanger(Prefix.CMD_HISTORY_SAVE, "сохраняем историю", new HistoryExchanger(historyList));
         try {
-            network.writeObject(ex);
+            network.writeObject(response);
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Ошибка отправки истории");
@@ -104,7 +104,7 @@ public class ChatControllerHandler<T extends ChatController> extends ControllerH
     }
 
     public void requestLoggedUsers() {
-        Exchanger exchanger=new Exchanger(Prefix.CMD_REQUEST_USERS, "запрашиваем список пользователей", null);
-        network.sendServiceMessage(exchanger);
+        Exchanger exchanger=new Exchanger(Prefix.CMD_REQUEST_USERS_LIST, "запрашиваем список пользователей", null);
+        network.sendMessage(exchanger);
     }
 }

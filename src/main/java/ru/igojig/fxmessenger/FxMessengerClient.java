@@ -77,13 +77,13 @@ public class FxMessengerClient extends Application {
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop()  {
 
         if (network.getUser() != null) {
             chatController.saveHistory();
         }
 
-        network.exitClient(network.getUser());
+        network.exitClient();
         System.out.println("Exit JavaFX");
         Platform.exit();
     }

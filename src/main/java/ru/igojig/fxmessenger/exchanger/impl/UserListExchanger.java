@@ -18,6 +18,7 @@ public class UserListExchanger implements ChatExchanger, Serializable {
     private List<User> userList;
     private User changedUser;
     private Mode mode;
+
     public enum Mode{
         ADD,
         REMOVE,

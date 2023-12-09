@@ -13,7 +13,7 @@ abstract public class ControllerHandler<T extends Controller> {
     protected T controller;
 
     @Getter
-    public Network network;
+    protected Network network;
 
     public ControllerHandler(T controller, Network network) {
         this.controller = controller;
@@ -21,8 +21,8 @@ abstract public class ControllerHandler<T extends Controller> {
     }
 
     public void requestUserHistory(User user) {
-        Exchanger exchanger = new Exchanger(Prefix.HISTORY_REQUEST, "запрашиваем историю", new UserExchanger(user));
-        network.sendServiceMessage(exchanger);
+        Exchanger exchanger = new Exchanger(Prefix.CMD_HISTORY_REQUEST, "запрашиваем историю", new UserExchanger(user));
+        network.sendMessage(exchanger);
     }
 
     public abstract void consumeMsg(Exchanger exchanger);

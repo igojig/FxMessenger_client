@@ -51,9 +51,6 @@
                                  <font>
                                     <Font name="Calibri Bold" size="18.0" />
                                  </font></Label>
-                              <Label text="|" />
-                              <Label fx:id="lblId" text="id" />
-                              <Label text="|" />
                            </items>
                            <opaqueInsets>
                               <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />

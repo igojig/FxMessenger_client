@@ -25,31 +25,29 @@ public class LoginControllerHandler<T extends LogInController> extends Controlle
             network.setUser(user);
             System.out.println("Пользователь вошел под именем: " + user);
 
-//            controller.setLogInUser(logInUser);
-
             Platform.runLater(() -> controller.showChat());
-
         }
+
         if (exchanger.getCommand() == AUTH_ERR) {
             System.out.println("Ошибка авторизации: " + exchanger.getMessage());
-
         }
+
         if (exchanger.getCommand() == REGISTER_OK) {
             User user = exchanger.getChatExchanger(UserExchanger.class).getUser();
+            network.setUser(user);
             System.out.println("Новый пользователь зарегистрировался под именем: " + user);
-//            controller.setLogInUser(logInUser);
-//            Controller.user=ControllerHandler.user;
 
             Platform.runLater(() -> controller.showChat());
         }
+
         if (exchanger.getCommand() == REGISTER_ERR) {
             System.out.println("Ошибка регистрации:  " + exchanger.getMessage());
-
         }
+
         if (exchanger.getCommand() == CMD_SHUT_DOWN_CLIENT) {
-            System.out.println("Пришла команда выключения клиента. Отключаемся");
+            System.out.println("Отключаем клиента");
             network.unsubscribe(this);
-            network.exitClient(null);
+            network.exitClient();
             Platform.exit();
         }
     }
@@ -61,7 +59,6 @@ public class LoginControllerHandler<T extends LogInController> extends Controlle
             return;
         }
 
-
         Exchanger exchanger = null;
         try {
             exchanger = new Exchanger(AUTH_REQUEST, null, new UserExchanger(new User(null, null, login, password)));
@@ -70,7 +67,6 @@ public class LoginControllerHandler<T extends LogInController> extends Controlle
             e.printStackTrace();
             System.out.println("Ошибка отправки команды начала авторизации: " + exchanger);
         }
-
     }
 
     public void register(String login, String password, String username) {
@@ -88,7 +84,6 @@ public class LoginControllerHandler<T extends LogInController> extends Controlle
             e.printStackTrace();
             System.out.println("Ошибка отправки команды регистрации нового пользователя: " + exchanger);
         }
-
     }
 
     public void unsubscribe() {

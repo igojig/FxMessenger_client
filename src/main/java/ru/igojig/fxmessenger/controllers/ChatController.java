@@ -134,7 +134,7 @@ public class ChatController extends Controller {
                 return;
             }
             System.out.println("Запрос на изменение имени: " + newUsername);
-            chatControllerHandler.sendServiceMessage(CHANGE_USERNAME_REQUEST, "изменение имени",
+            chatControllerHandler.sendMessage(CHANGE_USERNAME_REQUEST, "изменение имени",
                     new UserExchanger(new User(null, newUsername, null, null)));
         }
     }
@@ -146,7 +146,7 @@ public class ChatController extends Controller {
             if (selectedRecipient != null) {
                 // себе приватное сообщение не посылаем
                 if (!selectedRecipient.getId().equals(chatControllerHandler.getNetwork().getUser().getId())) {
-                    chatControllerHandler.sendPrivateMessage(message, selectedRecipient);
+                    chatControllerHandler.sendMessage(message, selectedRecipient);
                 }
             } else {
                 chatControllerHandler.sendMessage(message);
@@ -170,7 +170,7 @@ public class ChatController extends Controller {
 
     public void updateClientName(User user) {
         lblClientName.setText("User: ["+user.getUsername() + "]");
-        lblId.setText("id=" + user.getId());
+//        lblId.setText("id=" + user.getId());
     }
 
     public void menuFileCloseAction(ActionEvent actionEvent) {
@@ -220,7 +220,7 @@ public class ChatController extends Controller {
 
     public void sendPrivateMessageFromContextMenu(User sendToUser, String message) {
         if (!message.isBlank()) {
-            chatControllerHandler.sendPrivateMessage(message, sendToUser);
+            chatControllerHandler.sendMessage(message, sendToUser);
         }
     }
 

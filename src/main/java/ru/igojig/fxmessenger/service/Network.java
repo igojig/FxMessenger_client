@@ -13,14 +13,13 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import static ru.igojig.fxmessenger.prefix.Prefix.*;
 
 public class Network {
 
     // на сколько засыпаем при ожидании подключения к серверу
-    private static final int SLEEP_TIMEOUT = 1000;
+    private static final int WAIT_SERVER_CONNECTION_TIMEOUT = 1000;
 
     private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 8186;
@@ -36,8 +35,8 @@ public class Network {
     @Setter
     private User user;
 
-    ObjectOutputStream objectOutputStream;
-    ObjectInputStream objectInputStream;
+    private ObjectOutputStream objectOutputStream;
+    private ObjectInputStream objectInputStream;
 
     private Thread readThread;
 
@@ -61,7 +60,7 @@ public class Network {
 
     private void waitConnectionWithServer() {
 //         ждем пока запуститься сервер
-        Thread thread = new Thread(() -> {
+        Thread waitServerThread = new Thread(() -> {
             System.out.println("Клиент соединяется с сервером....");
             try {
                 while (socket == null) {
@@ -69,7 +68,7 @@ public class Network {
                         socket = new Socket(host, port);
                     } catch (ConnectException e) {
                         try {
-                            Thread.sleep(SLEEP_TIMEOUT);
+                            Thread.sleep(WAIT_SERVER_CONNECTION_TIMEOUT);
                             socket = null;
                         } catch (InterruptedException ex) {
                             System.out.println("Ошибка при создании сокета");
@@ -90,8 +89,8 @@ public class Network {
                 System.out.println("Соединение с сервером не установлено");
             }
         });
-        thread.setDaemon(true);
-        thread.start();
+        waitServerThread.setDaemon(true);
+        waitServerThread.start();
     }
 
     private void startReadThread() {
@@ -99,10 +98,9 @@ public class Network {
             while (true) {
                 try {
                     Exchanger exchanger = readObject();
-                    for(int i=0;i<handlerList.size();i++){
+                    for (int i = 0; i < handlerList.size(); i++) {
                         handlerList.get(i).consumeMsg(exchanger);
                     }
-
                 } catch (IOException | ClassNotFoundException e) {
                     System.out.println("Error in read thread: " + e);
                     break;
@@ -113,12 +111,19 @@ public class Network {
         readThread.start();
     }
 
-    // Сообщение от клиента -> клиенту
     public void sendMessage(String message) {
+        Exchanger exchanger = new Exchanger(CLIENT_MSG, message, null);
+        sendMessage(exchanger);
+    }
+
+    public void sendMessage(String message, User sendToUser) {
+        Exchanger exchanger = new Exchanger(PRIVATE_MSG, message, new UserExchanger(sendToUser));
+        sendMessage(exchanger);
+    }
+
+    public void sendMessage(Exchanger exchanger) {
         try {
             if (isConnected) {
-                Exchanger exchanger;
-                exchanger = new Exchanger(CLIENT_MSG, message, null);
                 objectOutputStream.reset();
                 objectOutputStream.writeObject(exchanger);
             }
@@ -128,35 +133,9 @@ public class Network {
         }
     }
 
-    public void sendPrivateMessage(String message, User sendToUser) {
-        try {
-            if (isConnected) {
-                Exchanger exchanger = new Exchanger(PRIVATE_MSG, message, new UserExchanger(sendToUser));
-                objectOutputStream.reset();
-                objectOutputStream.writeObject(exchanger);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Приватное сообщение от клиента не отправлено");
-        }
-    }
-
-    // сервисное сообщение
-    public void sendServiceMessage(Exchanger exchanger) {
-        try {
-            if (isConnected) {
-                objectOutputStream.reset();
-                objectOutputStream.writeObject(exchanger);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Сервисное сообщение от клиента не отправлено");
-        }
-    }
-
-    public void exitClient(User user) {
+    public void exitClient() {
         if (isConnected) {
-            if(user!=null){
+            if (user != null) {
                 Exchanger exchanger = new Exchanger(END_CLIENT, "выходим из чата", new UserExchanger(user));
                 try {
                     objectOutputStream.reset();
@@ -182,6 +161,7 @@ public class Network {
         return isConnected;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T readObject() throws IOException, ClassNotFoundException {
         return (T) objectInputStream.readObject();
     }
@@ -192,10 +172,10 @@ public class Network {
     }
 
     public void subscribe(ControllerHandler<?> handler) {
-            handlerList.add(handler);
+        handlerList.add(handler);
     }
 
     public void unsubscribe(ControllerHandler<?> handler) {
-            handlerList.remove(handler);
+        handlerList.remove(handler);
     }
 }

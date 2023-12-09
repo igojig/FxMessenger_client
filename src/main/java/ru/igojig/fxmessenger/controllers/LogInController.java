@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import lombok.Getter;
 import ru.igojig.fxmessenger.FxMessengerClient;
 import ru.igojig.fxmessenger.controllers.handlers.LoginControllerHandler;
 import ru.igojig.fxmessenger.service.Network;
@@ -15,9 +16,9 @@ public class LogInController extends Controller {
 
     @FXML
     public TextField txtLogin;
-
-    @FXML
-    public Label lblErrorText;
+//
+//    @FXML
+//    public Label lblErrorText;
 
     @FXML
     public Button btnLogIn;
@@ -33,25 +34,21 @@ public class LogInController extends Controller {
     @FXML
     public TextField txtRegisterUsername;
 
+    @Getter
     private FxMessengerClient fxMessengerClient;
 
     private LoginControllerHandler<LogInController> loginControllerHandler;
-
 
     @FXML
     public void initialize() {
     }
 
-
     @FXML
     public void logIn(ActionEvent actionEvent) {
-
-
         String login = txtLogin.getText().strip();
         String password = txtPassword.getText().strip();
 
         loginControllerHandler.logIn(login, password);
-
     }
 
 
@@ -81,21 +78,10 @@ public class LogInController extends Controller {
         }
 
         loginControllerHandler.register(login, password, username);
-
     }
 
     public void setNetwork(Network network) {
-//        this.network = network;
-
         loginControllerHandler = new LoginControllerHandler<>(this, network);
-//        registerControllerHandler=new RegisterControllerHandler<>(this, network);
-    }
-
-
-
-
-    public FxMessengerClient getFxMessengerClient() {
-        return fxMessengerClient;
     }
 
     public void subscribe() {
