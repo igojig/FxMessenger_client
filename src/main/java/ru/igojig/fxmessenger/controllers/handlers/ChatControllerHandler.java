@@ -27,7 +27,7 @@ public class ChatControllerHandler<T extends ChatController> extends ControllerH
         switch (prefix) {
 
             // пришел список пользователей
-            case LOGGED_USERS, CHANGE_USERNAME_NEW_LIST -> {
+            case LOGGED_USERS -> {
                 Platform.runLater(() -> controller.updateUserList(exchanger.getChatExchanger(UserListExchanger.class)));
             }
             case SERVER_MSG -> {
@@ -38,9 +38,8 @@ public class ChatControllerHandler<T extends ChatController> extends ControllerH
                     Platform.runLater(() -> controller.appendMessage(exchanger.getMessage()));
                 } else {
                     Platform.runLater(() -> controller.appendMessage(
-                            (exchanger.getChatExchanger(UserExchanger.class).getUser().getUsername() + ":" + exchanger.getMessage())));
+                            ("[" + exchanger.getChatExchanger(UserExchanger.class).getUser().getUsername() + "]"+ ":" + exchanger.getMessage())));
                 }
-//                Platform.runLater(() -> controller.appendMessage(exchanger.getMessage()));
             }
             case PRIVATE_MSG -> {
                 Platform.runLater(() -> controller.appendMessage("Приватное сообщение от ["
@@ -48,8 +47,8 @@ public class ChatControllerHandler<T extends ChatController> extends ControllerH
                         ":" + exchanger.getMessage())));
             }
             case CHANGE_USERNAME_OK -> {
-                Platform.runLater(() -> controller.appendMessage("Новое имя пользователя: " +
-                        (exchanger.getChatExchanger(UserExchanger.class).getUser().getUsername())));
+                Platform.runLater(() -> controller.appendMessage("Новое имя пользователя [" +
+                        (exchanger.getChatExchanger(UserExchanger.class).getUser().getUsername()) + "]"));
                 network.setUser(exchanger.getChatExchanger(UserExchanger.class).getUser());
                 Platform.runLater(() -> controller.updateClientName(exchanger.getChatExchanger(UserExchanger.class).getUser()));
             }
@@ -64,7 +63,6 @@ public class ChatControllerHandler<T extends ChatController> extends ControllerH
             }
             case CMD_HISTORY_LOAD -> {
                 HistoryExchanger historyExchanger = exchanger.getChatExchanger(HistoryExchanger.class);
-//                Platform.runLater(()->{controller.appendMessage("Загружаем историю сообщений");});
                 Platform.runLater(()->controller.setUserHistory(historyExchanger.getHistoryList()));
             }
             default -> {
@@ -93,6 +91,7 @@ public class ChatControllerHandler<T extends ChatController> extends ControllerH
         Exchanger response = new Exchanger(Prefix.CMD_HISTORY_SAVE, "сохраняем историю", new HistoryExchanger(historyList));
         try {
             network.writeObject(response);
+//            network.sendMessage(response);
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Ошибка отправки истории");

@@ -2,21 +2,21 @@ package ru.igojig.fxmessenger.controllers;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import ru.igojig.fxmessenger.controllers.handlers.ChatControllerHandler;
-import ru.igojig.fxmessenger.exchanger.impl.UserListExchanger;
+import ru.igojig.fxmessenger.exchanger.UserChangeMode;
 import ru.igojig.fxmessenger.exchanger.impl.UserExchanger;
+import ru.igojig.fxmessenger.exchanger.impl.UserListExchanger;
 import ru.igojig.fxmessenger.model.User;
 import ru.igojig.fxmessenger.service.Network;
 
 import java.util.List;
 import java.util.Optional;
 
-import static ru.igojig.fxmessenger.prefix.Prefix.*;
+import static ru.igojig.fxmessenger.prefix.Prefix.CHANGE_USERNAME_REQUEST;
 
 public class ChatController extends Controller {
 
@@ -123,7 +123,10 @@ public class ChatController extends Controller {
     public void onChangeUserName(ActionEvent actionEvent) {
         TextInputDialog dialog = new TextInputDialog("");
 
-        dialog.setTitle("Пользователь: " + chatControllerHandler.getNetwork().getUser().getUsername() + " id=" + chatControllerHandler.getNetwork().getUser().getId());
+        dialog.setTitle("Пользователь: "
+                + chatControllerHandler.getNetwork().getUser().getUsername()
+                + " id="
+                + chatControllerHandler.getNetwork().getUser().getId());
         dialog.setHeaderText("Введите новое имя пользователя");
         dialog.setContentText("Enter new Username:");
 
@@ -169,8 +172,7 @@ public class ChatController extends Controller {
     }
 
     public void updateClientName(User user) {
-        lblClientName.setText("User: ["+user.getUsername() + "]");
-//        lblId.setText("id=" + user.getId());
+        lblClientName.setText("User: [" + user.getUsername() + "]");
     }
 
     public void menuFileCloseAction(ActionEvent actionEvent) {
@@ -194,21 +196,15 @@ public class ChatController extends Controller {
     public void updateUserList(UserListExchanger userListExchanger) {
         lstUsers.getItems().clear();
 
-        UserListExchanger.Mode mode = userListExchanger.getMode();
+        UserChangeMode userChangeMode = userListExchanger.getUserChangeMode();
 
-        if (mode == UserListExchanger.Mode.ADD) {
+        if (userChangeMode == UserChangeMode.ADD) {
             appendMessage("Подключился: " + userListExchanger.getChangedUser().getUsername());
         }
-        if (mode == UserListExchanger.Mode.REMOVE) {
+        if (userChangeMode == UserChangeMode.REMOVE) {
             appendMessage("Отключился: " + userListExchanger.getChangedUser().getUsername());
         }
-        if (mode == UserListExchanger.Mode.CHANGE_NAME) {
-            //???
-        }
-
-        for (User u : userListExchanger.getUserList()) {
-            lstUsers.getItems().add(u);
-        }
+        userListExchanger.getUserList().forEach((u -> lstUsers.getItems().add(u)));
 
         lstUsers.refresh();
         updateUserCount();

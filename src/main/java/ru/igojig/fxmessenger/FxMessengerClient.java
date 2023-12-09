@@ -28,7 +28,6 @@ public class FxMessengerClient extends Application {
     private ChatController chatController;
     private LogInController logInController;
 
-
     @Override
     public void start(Stage stage) throws IOException {
         network = new Network();
@@ -58,27 +57,18 @@ public class FxMessengerClient extends Application {
     }
 
     public void showChat() {
-
-
-
         chatStage.setScene(sceneChat);
         chatStage.setTitle("Наш чат");
-
-
         chatController.updateClientName(network.getUser());
         chatController.subscribe();
         logInController.unsubscribe();
-
         chatController.requestLoggedUsers();
         chatController.requestHistory(network.getUser());
-
         chatStage.show();
-
     }
 
     @Override
-    public void stop()  {
-
+    public void stop() {
         if (network.getUser() != null) {
             chatController.saveHistory();
         }

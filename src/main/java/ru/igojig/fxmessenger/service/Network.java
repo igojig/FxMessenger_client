@@ -133,6 +133,11 @@ public class Network {
         }
     }
 
+    public <T> void writeObject(T t) throws IOException {
+        objectOutputStream.reset();
+        objectOutputStream.writeObject(t);
+    }
+
     public void exitClient() {
         if (isConnected) {
             if (user != null) {
@@ -164,11 +169,6 @@ public class Network {
     @SuppressWarnings("unchecked")
     public <T> T readObject() throws IOException, ClassNotFoundException {
         return (T) objectInputStream.readObject();
-    }
-
-    public <T> void writeObject(T t) throws IOException {
-        objectOutputStream.reset();
-        objectOutputStream.writeObject(t);
     }
 
     public void subscribe(ControllerHandler<?> handler) {
