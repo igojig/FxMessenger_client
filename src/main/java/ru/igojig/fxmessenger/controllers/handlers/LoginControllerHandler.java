@@ -63,7 +63,6 @@ public class LoginControllerHandler<T extends LogInController> extends Controlle
         try {
             exchanger = new Exchanger(AUTH_REQUEST, null, new UserExchanger(new User(null, null, login, password)));
             network.writeObject(exchanger);
-//            network.sendMessage(exchanger);
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Ошибка отправки команды начала авторизации: " + exchanger);

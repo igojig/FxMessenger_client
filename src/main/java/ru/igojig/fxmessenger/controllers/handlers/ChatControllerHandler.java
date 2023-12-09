@@ -26,7 +26,6 @@ public class ChatControllerHandler<T extends ChatController> extends ControllerH
         Prefix prefix = exchanger.getCommand();
         switch (prefix) {
 
-            // пришел список пользователей
             case LOGGED_USERS -> {
                 Platform.runLater(() -> controller.updateUserList(exchanger.getChatExchanger(UserListExchanger.class)));
             }
@@ -91,7 +90,6 @@ public class ChatControllerHandler<T extends ChatController> extends ControllerH
         Exchanger response = new Exchanger(Prefix.CMD_HISTORY_SAVE, "сохраняем историю", new HistoryExchanger(historyList));
         try {
             network.writeObject(response);
-//            network.sendMessage(response);
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Ошибка отправки истории");

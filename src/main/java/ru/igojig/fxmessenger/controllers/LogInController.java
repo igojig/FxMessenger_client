@@ -56,15 +56,10 @@ public class LogInController extends Controller {
         this.fxMessengerClient = fxMessengerClient;
     }
 
-    public void exitClient() {
-        fxMessengerClient.shutDown();
-    }
-
     public void showChat() {
         System.out.println("Открываем чат");
         fxMessengerClient.showChat();
     }
-
 
     @FXML
     public void onBtnRegister(ActionEvent actionEvent) {
