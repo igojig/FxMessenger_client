@@ -2,6 +2,8 @@ package ru.igojig.fxmessenger.service;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.igojig.fxmessenger.controllers.handlers.ControllerHandler;
 import ru.igojig.fxmessenger.exchanger.Exchanger;
 import ru.igojig.fxmessenger.exchanger.impl.UserExchanger;
@@ -17,6 +19,8 @@ import java.util.List;
 import static ru.igojig.fxmessenger.prefix.Prefix.*;
 
 public class Network {
+
+    private static final Logger logger= LogManager.getLogger(Network.class);
 
     // на сколько засыпаем при ожидании подключения к серверу
     private static final int WAIT_SERVER_CONNECTION_TIMEOUT = 1000;
@@ -46,7 +50,6 @@ public class Network {
     public Network(String host, int port) {
         this.host = host;
         this.port = port;
-
         handlerList = new ArrayList<>();
     }
 
@@ -61,7 +64,7 @@ public class Network {
     private void waitConnectionWithServer() {
 //         ждем пока запуститься сервер
         Thread waitServerThread = new Thread(() -> {
-            System.out.println("Клиент соединяется с сервером....");
+            logger.info("Клиент соединяется с сервером....");
             try {
                 while (socket == null) {
                     try {
@@ -71,22 +74,20 @@ public class Network {
                             Thread.sleep(WAIT_SERVER_CONNECTION_TIMEOUT);
                             socket = null;
                         } catch (InterruptedException ex) {
-                            System.out.println("Ошибка при создании сокета");
+                            logger.error("Ошибка при создании сокета", ex);
                             throw new RuntimeException(ex);
                         }
                     }
                 }
-                System.out.println("Соединение с сервером установлено");
+                logger.info("Соединение с сервером установлено");
 
                 objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
                 objectInputStream = new ObjectInputStream(socket.getInputStream());
                 isConnected = true;
 
                 startReadThread();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Соединение с сервером не установлено");
+            } catch (Exception ex) {
+                logger.error("Соединение с сервером не установлено", ex);
             }
         });
         waitServerThread.setDaemon(true);
@@ -102,7 +103,7 @@ public class Network {
                         handlerList.get(i).consumeMsg(exchanger);
                     }
                 } catch (IOException | ClassNotFoundException e) {
-                    System.out.println("Error in read thread: " + e);
+                    logger.debug("Error in read thread: " + e);
                     break;
                 }
             }
@@ -127,9 +128,8 @@ public class Network {
                 objectOutputStream.reset();
                 objectOutputStream.writeObject(exchanger);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Сообщение от клиента не отправлено");
+        } catch (IOException ex) {
+            logger.error("Сообщение от клиента не отправлено", ex);
         }
     }
 
@@ -148,7 +148,7 @@ public class Network {
                     objectOutputStream.close();
                     objectInputStream.close();
                 } catch (IOException e) {
-                    System.out.println("ошибка в ExitClient: " + e);
+                    logger.debug("ошибка в ExitClient: " + e);
                 }
             }
         }

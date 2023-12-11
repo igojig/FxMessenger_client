@@ -2,6 +2,8 @@ package ru.igojig.fxmessenger.controllers.handlers;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.igojig.fxmessenger.controllers.ChatController;
 import ru.igojig.fxmessenger.exchanger.ChatExchanger;
 import ru.igojig.fxmessenger.exchanger.Exchanger;
@@ -16,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatControllerHandler<T extends ChatController> extends ControllerHandler<T> {
+
+    private static final Logger logger = LogManager.getLogger(ChatControllerHandler.class);
 
     public ChatControllerHandler(T controller, Network network) {
         super(controller, network);
@@ -50,15 +54,18 @@ public class ChatControllerHandler<T extends ChatController> extends ControllerH
                         (exchanger.getChatExchanger(UserExchanger.class).getUser().getUsername()) + "]"));
                 network.setUser(exchanger.getChatExchanger(UserExchanger.class).getUser());
                 Platform.runLater(() -> controller.updateClientName(exchanger.getChatExchanger(UserExchanger.class).getUser()));
+
+                logger.debug(String.format("Новое имя пользователя: [%s]", exchanger.getChatExchanger(UserExchanger.class).getUser()));
             }
             case CHANGE_USERNAME_ERR -> {
                 Platform.runLater(() -> controller.appendMessage("Ошибка смены имени пользователя:"));
-                System.out.println("Ошибка смены имени пользователя: " + exchanger);
+                logger.debug("Ошибка смены имени пользователя: " + exchanger);
+//                System.out.println("Ошибка смены имени пользователя: " + exchanger);
             }
             case PRIVATE_MSG_ERR -> {
                 User sendToUser = exchanger.getChatExchanger(UserExchanger.class).getUser();
                 Platform.runLater(() -> controller.appendMessage("Пользователь: " + sendToUser.getUsername() + " не найден"));
-                System.out.println("Пользователь не найден: " + sendToUser);
+                logger.debug("Пользователь не найден: " + sendToUser);
             }
             case CMD_HISTORY_LOAD -> {
                 HistoryExchanger historyExchanger = exchanger.getChatExchanger(HistoryExchanger.class);
@@ -66,7 +73,7 @@ public class ChatControllerHandler<T extends ChatController> extends ControllerH
             }
             default -> {
                 Platform.runLater(() -> controller.appendMessage("Неизвестный тип сообщения: " + exchanger.getMessage()));
-                System.out.println("Неизвестный тип сообщения: " + exchanger);
+                logger.debug("Неизвестный тип сообщения: " + exchanger);
             }
         }
     }
@@ -90,9 +97,8 @@ public class ChatControllerHandler<T extends ChatController> extends ControllerH
         Exchanger response = new Exchanger(Prefix.CMD_HISTORY_SAVE, "сохраняем историю", new HistoryExchanger(historyList));
         try {
             network.writeObject(response);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Ошибка отправки истории");
+        } catch (IOException ex) {
+            logger.debug("Ошибка отправки истории", ex);
         }
     }
 

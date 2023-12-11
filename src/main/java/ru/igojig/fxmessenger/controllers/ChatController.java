@@ -1,11 +1,21 @@
 package ru.igojig.fxmessenger.controllers;
 
+import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import ru.igojig.fxmessenger.FxMessengerClient;
 import ru.igojig.fxmessenger.controllers.handlers.ChatControllerHandler;
 import ru.igojig.fxmessenger.exchanger.UserChangeMode;
 import ru.igojig.fxmessenger.exchanger.impl.UserExchanger;
@@ -20,10 +30,17 @@ import static ru.igojig.fxmessenger.prefix.Prefix.CHANGE_USERNAME_REQUEST;
 
 public class ChatController extends Controller {
 
+    private static final Logger logger = LogManager.getLogger(ChatController.class);
+
+    private final String githubUrl = "www.github.com/igojig";
+
     @FXML
     public Label lblClientName;
     @FXML
     public Label lblId;
+
+    @FXML
+    public Hyperlink menuHyperlink;
 
     @FXML
     private Button btnSendMessage;
@@ -46,6 +63,7 @@ public class ChatController extends Controller {
     private User selectedRecipient;
 
     private ChatControllerHandler<ChatController> chatControllerHandler;
+    private FxMessengerClient fxMessengerClient;
 
     @FXML
     public void initialize() {
@@ -78,7 +96,6 @@ public class ChatController extends Controller {
                 User sendToUser = cell.getItem();
                 // code to edit item...
                 sendPrivateMessageFromContextMenu(sendToUser, txtMessage.getText());
-                System.out.println("Private message send");
             });
 
             MenuItem menuItemSendToAll = new MenuItem();
@@ -87,7 +104,6 @@ public class ChatController extends Controller {
                 User sendToUser = cell.getItem();
                 // code to edit item...
                 sendMessageToAllFromContextMenu(txtMessage.getText());
-                System.out.println("Message to all send");
             });
 
             contextMenu.getItems().addAll(menuItemPrivateMsg, menuItemSendToAll);
@@ -123,12 +139,15 @@ public class ChatController extends Controller {
     public void onChangeUserName(ActionEvent actionEvent) {
         TextInputDialog dialog = new TextInputDialog("");
 
-        dialog.setTitle("Пользователь: "
+        dialog.setTitle("Пользователь: ["
                 + chatControllerHandler.getNetwork().getUser().getUsername()
-                + " id="
-                + chatControllerHandler.getNetwork().getUser().getId());
-        dialog.setHeaderText("Введите новое имя пользователя");
-        dialog.setContentText("Enter new Username:");
+                + "]"
+                + "; id=["
+                + chatControllerHandler.getNetwork().getUser().getId()
+                + "]"
+        );
+        dialog.setHeaderText(String.format("Текущее имя: [%s]", chatControllerHandler.getNetwork().getUser().getUsername()));
+        dialog.setContentText("Введите новое имя:");
 
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
@@ -136,7 +155,7 @@ public class ChatController extends Controller {
             if (newUsername.isEmpty()) {
                 return;
             }
-            System.out.println("Запрос на изменение имени: " + newUsername);
+            logger.debug("Запрос на изменение имени: " + newUsername);
             chatControllerHandler.sendMessage(CHANGE_USERNAME_REQUEST, "изменение имени",
                     new UserExchanger(new User(null, newUsername, null, null)));
         }
@@ -180,7 +199,41 @@ public class ChatController extends Controller {
     }
 
     public void menuHelpAboutAction(ActionEvent actionEvent) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Здесь в дальнейшем будет нормальное окно...", ButtonType.OK);
+        final String about = """
+                Привет!
+                Меня зовут Игорь.
+                Я начинающий Java-разработчик.
+                Это мой первый учебный проект.
+                """;
+
+        Font font=new Font(16);
+
+        VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
+
+        Label label = new Label(about);
+        label.setTextAlignment(TextAlignment.CENTER);
+        label.setFont(font);
+
+        Hyperlink hyperlink = new Hyperlink(githubUrl);
+        hyperlink.setAlignment(Pos.CENTER);
+        hyperlink.setTextAlignment(TextAlignment.CENTER);
+        hyperlink.setFont(font);
+        hyperlink.setBorder(Border.EMPTY);
+        hyperlink.setPadding(new Insets(4, 0, 4, 0));
+
+        Alert alert = new Alert(Alert.AlertType.NONE, about, ButtonType.OK);
+
+        hyperlink.setOnAction(event -> {
+            HostServices hostServices = fxMessengerClient.getHostServices();
+            hostServices.showDocument(githubUrl);
+        });
+
+        vBox.getChildren().add(label);
+        vBox.getChildren().add(hyperlink);
+
+        alert.getDialogPane().setContent(vBox);
+        alert.setTitle("About");
         alert.showAndWait();
     }
 
@@ -250,5 +303,15 @@ public class ChatController extends Controller {
 
     public void requestHistory(User user) {
         chatControllerHandler.requestUserHistory(user);
+    }
+
+    @FXML
+    public void onMenuHyperlink(ActionEvent actionEvent) {
+        HostServices hostServices = fxMessengerClient.getHostServices();
+        hostServices.showDocument(githubUrl);
+    }
+
+    public void setFxMessengerClient(FxMessengerClient fxMessengerClient) {
+        this.fxMessengerClient = fxMessengerClient;
     }
 }

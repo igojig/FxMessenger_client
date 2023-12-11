@@ -20,7 +20,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.igojig.fxmessenger.controllers.ChatController">
+<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.igojig.fxmessenger.controllers.ChatController">
    <center>
       <SplitPane dividerPositions="0.29797979797979796" minHeight="-Infinity" minWidth="-Infinity" BorderPane.alignment="CENTER">
         <items>
@@ -80,7 +80,7 @@
       </SplitPane>
    </center>
    <top>
-      <MenuBar BorderPane.alignment="CENTER">
+      <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
@@ -99,7 +99,10 @@
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <CustomMenuItem mnemonicParsing="false" text="Unspecified Action">
                      <content>
-                        <Hyperlink text="https://github.com/igojig" underline="true" />
+                        <Hyperlink fx:id="menuHyperlink" onAction="#onMenuHyperlink" style="-fx-text-fill: blue;" text="www.github.com/igojig" underline="true">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></Hyperlink>
                      </content>
                   </CustomMenuItem>
             </items>

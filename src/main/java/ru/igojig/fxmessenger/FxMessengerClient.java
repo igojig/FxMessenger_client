@@ -1,11 +1,14 @@
 package ru.igojig.fxmessenger;
 
 import javafx.application.Application;
+import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.igojig.fxmessenger.controllers.ChatController;
 import ru.igojig.fxmessenger.controllers.Controller;
 import ru.igojig.fxmessenger.controllers.LogInController;
@@ -16,6 +19,8 @@ import ru.igojig.fxmessenger.service.Network;
 import java.io.IOException;
 
 public class FxMessengerClient extends Application {
+
+    private static final Logger logger= LogManager.getLogger(FxMessengerClient.class);
     static final String SERVER_NAME = "localhost";
     static final int SERVER_PORT = 8186;
 
@@ -40,7 +45,6 @@ public class FxMessengerClient extends Application {
         chatController.setNetwork(network);
 
         stage.setTitle("Fx Messenger-Client");
-//        stage.setScene(sceneChat);
 
         FXMLLoader fxmlLoaderLogIn = new FXMLLoader(FxMessengerClient.class.getResource("login.fxml"));
         sceneLogIn = new Scene(fxmlLoaderLogIn.load(), 645, 266);
@@ -53,7 +57,7 @@ public class FxMessengerClient extends Application {
         stage.show();
 
         logInController.setFxMessengerClient(this);
-
+        chatController.setFxMessengerClient(this);
     }
 
     public void showChat() {
@@ -72,9 +76,8 @@ public class FxMessengerClient extends Application {
         if (network.getUser() != null) {
             chatController.saveHistory();
         }
-
         network.exitClient();
-        System.out.println("Exit JavaFX");
+        logger.info("Exit JavaFX");
         Platform.exit();
     }
 

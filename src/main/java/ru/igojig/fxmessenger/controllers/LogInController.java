@@ -2,10 +2,10 @@ package ru.igojig.fxmessenger.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import lombok.Getter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.igojig.fxmessenger.FxMessengerClient;
 import ru.igojig.fxmessenger.controllers.handlers.LoginControllerHandler;
 import ru.igojig.fxmessenger.service.Network;
@@ -13,12 +13,10 @@ import ru.igojig.fxmessenger.service.Network;
 
 public class LogInController extends Controller {
 
+    private static final Logger logger= LogManager.getLogger(LogInController.class);
 
     @FXML
     public TextField txtLogin;
-//
-//    @FXML
-//    public Label lblErrorText;
 
     @FXML
     public Button btnLogIn;
@@ -47,7 +45,6 @@ public class LogInController extends Controller {
     public void logIn(ActionEvent actionEvent) {
         String login = txtLogin.getText().strip();
         String password = txtPassword.getText().strip();
-
         loginControllerHandler.logIn(login, password);
     }
 
@@ -57,7 +54,7 @@ public class LogInController extends Controller {
     }
 
     public void showChat() {
-        System.out.println("Открываем чат");
+        logger.info("Открываем чат");
         fxMessengerClient.showChat();
     }
 
@@ -68,7 +65,8 @@ public class LogInController extends Controller {
         String username = txtRegisterUsername.getText().strip();
 
         if (login.isEmpty() || password.isEmpty() || username.isEmpty()) {
-            System.out.println("Поля не должны быть пустыми");
+            Alert alert=new Alert(Alert.AlertType.WARNING, "Поля должны быть заполнены", ButtonType.OK);
+            alert.showAndWait();
             return;
         }
 
