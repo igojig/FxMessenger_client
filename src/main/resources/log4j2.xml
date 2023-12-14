@@ -4,23 +4,10 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss} %5p %t %c:%M:%L - %m%n"/>
         </Console>
-
-<!--        <File name="MyFile" fileName="./logs/chat.log">-->
-<!--            <append>false</append>-->
-<!--            <PatternLayout>-->
-<!--                <Pattern>%d{HH:mm:ss} %5p %t %c:%M:%L - %m%n</Pattern>-->
-<!--            </PatternLayout>-->
-<!--        </File>-->
     </Appenders>
-
     <Loggers>
         <Root level="debug">
             <AppenderRef ref="Console"/>
-<!--            <AppenderRef ref="MyFile"/>-->
-
         </Root>
-<!--        <Logger name="ru.igojig.fxmessenger.server" level="debug" additivity="false">-->
-<!--            <AppenderRef ref="MyFile"/>-->
-<!--        </Logger>-->
     </Loggers>
 </Configuration>

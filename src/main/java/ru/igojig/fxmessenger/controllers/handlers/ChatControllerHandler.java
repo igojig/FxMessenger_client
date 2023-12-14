@@ -58,7 +58,7 @@ public class ChatControllerHandler<T extends ChatController> extends ControllerH
                 logger.debug(String.format("Новое имя пользователя: [%s]", exchanger.getChatExchanger(UserExchanger.class).getUser()));
             }
             case CHANGE_USERNAME_ERR -> {
-                Platform.runLater(() -> controller.appendMessage("Ошибка смены имени пользователя:"));
+                Platform.runLater(() -> controller.appendMessage("Ошибка смены имени пользователя: " + exchanger.getChatExchanger(UserExchanger.class).getUser().getUsername()));
                 logger.debug("Ошибка смены имени пользователя: " + exchanger);
 //                System.out.println("Ошибка смены имени пользователя: " + exchanger);
             }

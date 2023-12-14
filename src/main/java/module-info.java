@@ -3,6 +3,7 @@ module ru.igojig.fxmessenger {
     requires javafx.fxml;
     requires lombok;
     requires org.apache.logging.log4j;
+    requires org.apache.logging.log4j.core;
 
     opens ru.igojig.fxmessenger to javafx.fxml;
     exports ru.igojig.fxmessenger;
