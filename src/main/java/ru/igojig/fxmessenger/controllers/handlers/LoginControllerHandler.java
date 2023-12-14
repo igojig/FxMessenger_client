@@ -1,9 +1,13 @@
 package ru.igojig.fxmessenger.controllers.handlers;
 
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.igojig.fxmessenger.controllers.Controller;
 import ru.igojig.fxmessenger.controllers.LogInController;
 import ru.igojig.fxmessenger.exchanger.Exchanger;
 import ru.igojig.fxmessenger.exchanger.impl.UserExchanger;
@@ -16,11 +20,13 @@ import static ru.igojig.fxmessenger.prefix.Prefix.*;
 
 public class LoginControllerHandler<T extends LogInController> extends ControllerHandler<T> {
 
-    private static final Logger logger= LogManager.getLogger(LoginControllerHandler.class);
+    private static final Logger logger = LogManager.getLogger(LoginControllerHandler.class);
 
     public LoginControllerHandler(T controller, Network network) {
         super(controller, network);
     }
+
+    private volatile boolean isReadyForExit = false;
 
     @Override
     public void consumeMsg(Exchanger exchanger) {
@@ -47,11 +53,32 @@ public class LoginControllerHandler<T extends LogInController> extends Controlle
         }
 
         if (exchanger.getCommand() == CMD_SHUT_DOWN_CLIENT) {
+            Platform.runLater(() -> {
+                showAlertAndWait(exchanger);
+            });
+            while (!isReadyForExit) {
+                Thread.onSpinWait();
+            }
             logger.debug("Отключаем клиента");
             network.unsubscribe(this);
             network.exitClient();
             Platform.exit();
         }
+    }
+
+    private void showAlertAndWait(Exchanger exchanger) {
+        Alert alert = new Alert(Alert.AlertType.WARNING, exchanger.getMessage(), ButtonType.OK);
+
+        Font font=new Font(16);
+
+        Label label = new Label(exchanger.getMessage());
+        label.setTextAlignment(TextAlignment.CENTER);
+        label.setFont(font);
+
+        alert.getDialogPane().setContent(label);
+        alert.showAndWait();
+
+        isReadyForExit = true;
     }
 
     public void logIn(String login, String password) {
