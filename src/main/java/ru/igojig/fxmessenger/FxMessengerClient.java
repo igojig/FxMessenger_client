@@ -40,7 +40,7 @@ public class FxMessengerClient extends Application {
 
         chatStage = stage;
         FXMLLoader fxmlLoaderChat = new FXMLLoader(FxMessengerClient.class.getResource("main_view_client.fxml"));
-        sceneChat = new Scene(fxmlLoaderChat.load(), 800, 600);
+        sceneChat = new Scene(fxmlLoaderChat.load(), 800, 200);
         chatController = fxmlLoaderChat.getController();
         chatController.setNetwork(network);
 
