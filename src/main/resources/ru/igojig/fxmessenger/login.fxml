@@ -8,9 +8,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<TabPane prefHeight="212.0" prefWidth="622.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.igojig.fxmessenger.controllers.LogInController">
+<TabPane prefHeight="212.0" prefWidth="622.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.igojig.fxmessenger.controllers.LogInController">
   <tabs>
-    <Tab text="Вход">
+    <Tab fx:id="tabLogin" onSelectionChanged="#onLogin" text="Вход">
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
@@ -43,7 +43,7 @@
             </AnchorPane>
       </content>
     </Tab>
-    <Tab text="Регистрация">
+    <Tab fx:id="tabRegister" onSelectionChanged="#onRegister" text="Регистрация">
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="291.0" prefWidth="622.0">
                <children>

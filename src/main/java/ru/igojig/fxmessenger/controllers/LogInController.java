@@ -1,8 +1,10 @@
 package ru.igojig.fxmessenger.controllers;
 
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,6 +33,11 @@ public class LogInController extends Controller {
     public TextField txtRegisterPassword;
     @FXML
     public TextField txtRegisterUsername;
+    @FXML
+    public Tab tabLogin;
+
+    @FXML
+    public Tab tabRegister;
 
     @Getter
     private FxMessengerClient fxMessengerClient;
@@ -83,5 +90,21 @@ public class LogInController extends Controller {
 
     public void unsubscribe() {
         loginControllerHandler.unsubscribe();
+    }
+
+    public void onRegister(Event event) {
+        TabPane tabPane = tabLogin.getTabPane();
+        if(tabPane!=null){
+            Stage primStage = (Stage) tabPane.getScene().getWindow();
+            primStage.setTitle("Регистрация");
+        }
+    }
+
+    public void onLogin(Event event) {
+        TabPane tabPane = tabLogin.getTabPane();
+        if(tabPane!=null){
+            Stage primStage = (Stage) tabPane.getScene().getWindow();
+            primStage.setTitle("Вход");
+        }
     }
 }

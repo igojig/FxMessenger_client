@@ -51,7 +51,7 @@ public class FxMessengerClient extends Application {
         logInController = fxmlLoaderLogIn.getController();
         logInController.setNetwork(network);
 
-        stage.setTitle("LogIn");
+        stage.setTitle("Вход");
         stage.setScene(sceneLogIn);
         logInController.subscribe();
         stage.show();
