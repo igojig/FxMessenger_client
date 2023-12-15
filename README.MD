@@ -1,9 +1,9 @@
 ## Сетевой чат
 
 ### Клиентская часть сетевого чата
-<picture>
+<p>
     <img align="center" src="./github_samples/login.png" alt="fff">
-</picture> 
+</p> 
 
 ![img](./github_samples/login.png)
 ![img](./github_samples/chat_demo.png)
