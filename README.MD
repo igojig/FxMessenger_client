@@ -1,6 +1,11 @@
 ## Сетевой чат
 
 ### Клиентская часть сетевого чата
+<picture>
+    <img align="center" src="./github_samples/login.png" alt="fff">
+</picture> 
+
+![img](./github_samples/login.png)
 ![img](./github_samples/chat_demo.png)
 
 Для запуска требуется запуск серверной части:  
