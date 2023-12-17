@@ -5,7 +5,6 @@
     <img src="./github_samples/login.png" alt="fff">
 </p>
 
-![img](./github_samples/login.png)
 ![img](./github_samples/chat_demo.png)
 
 Для запуска требуется запуск серверной части:  
