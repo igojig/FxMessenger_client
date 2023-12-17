@@ -1,13 +1,25 @@
+![Static Badge](https://img.shields.io/badge/java-17%2B-blue)
+![Static Badge](https://img.shields.io/badge/java%20FX-17%2B-blue)
+
+
 ## Сетевой чат
+Учебный проект GeekBrains
 
 ### Клиентская часть сетевого чата
 <p align="center">
-    <img src="./github_samples/login.png" alt="fff">
+    <img src="./github_samples/login.png" width="400">
+    <img src="./github_samples/register_sample.png" width="360">
 </p>
 
-![img](./github_samples/chat_demo.png)
+<p align="center">
+    <img src="./github_samples/chat/chat_demo_1.png" width="500">&nbsp;
+    <img src="./github_samples/chat/chat_demo_2.png" width="600">&nbsp;
+    <img src="./github_samples/chat/chat_demo_3.png" width="600">&nbsp;
+    <img src="./github_samples/chat/chat_demo_4.png" width="600">&nbsp;
+</p> 
 
-Для запуска требуется запуск серверной части:  
+[//]: # (![img]&#40;./github_samples/login.png&#41;)
+[//]: # (![img]&#40;github_samples/chat/chat_demo.png&#41;)
 
 ### Функционал проекта:
 
@@ -21,3 +33,35 @@
 - сохранение истории сообщений на сервере при выходе
 - [регистрация нового пользователя](./github_samples/register_sample.png)
 - [закрытие клиента при процедуре входа или регистрации при неактивности клиента в течении 60 сек. (время устанавливается на сервере)](./github_samples/exit_client.png)
+- вывод лога в консоль
+### Клонирование и запуск
+````
+git clone https://github.com/igojig/FxMessager_client
+````
+
+#### Запуск
+Для функционирования требуется запуск [серверной части](https://github.com/igojig/ServerConsole)
+```
+chcp 1251
+mvn clean javafx:run
+```
+
+#### Создание исполняемого образа
+``` java
+mvn clean javafx:jlink
+```
+
+#### Параметры для входа
+при старте серверной части создаются четыре пользователя:
+```
+[login]  [password]  [username]
+   1         1          One
+   2         2          Two
+   3         3          Three
+   4         4          Four
+```
+также есть возможность зарегистрировать нового пользователя
+
+### Технологии
+
+
