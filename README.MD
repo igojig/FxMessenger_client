@@ -1,11 +1,9 @@
 ![Static Badge](https://img.shields.io/badge/java-17%2B-blue)
 ![Static Badge](https://img.shields.io/badge/java%20FX-17%2B-blue)
 
-
-## Сетевой чат
+# Сетевой чат (клиент)
 Учебный проект GeekBrains
 
-### Клиентская часть сетевого чата
 <p align="center">
     <img src="./github_samples/login.png" width="400">
     <img src="./github_samples/register_sample.png" width="360">
@@ -34,19 +32,19 @@
 - [регистрация нового пользователя](./github_samples/register_sample.png)
 - [закрытие клиента при процедуре входа или регистрации при неактивности клиента в течении 60 сек. (время устанавливается на сервере)](./github_samples/exit_client.png)
 - вывод лога в консоль
-### Клонирование и запуск
+### Установка
 ````
 git clone https://github.com/igojig/FxMessager_client
 ````
 
-#### Запуск
+### Запуск
 Для функционирования требуется запуск [серверной части](https://github.com/igojig/ServerConsole)
 ```
 chcp 1251
 mvn clean javafx:run
 ```
 
-#### Создание исполняемого образа
+### Создание исполняемого образа
 ``` java
 mvn clean javafx:jlink
 ```
@@ -61,7 +59,5 @@ mvn clean javafx:jlink
    4         4          Four
 ```
 также есть возможность зарегистрировать нового пользователя
-
-### Технологии
 
 
