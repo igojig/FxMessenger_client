@@ -1,5 +1,9 @@
-![Static Badge](https://img.shields.io/badge/java-17%2B-blue)
-![Static Badge](https://img.shields.io/badge/java%20FX-17%2B-blue)
+![Static Badge](https://img.shields.io/badge/Java-17%2B-blue)
+![Static Badge](https://img.shields.io/badge/Java%20FX-17%2B-blue)
+![Static Badge](https://img.shields.io/badge/Lombok-blue)
+![Static Badge](https://img.shields.io/badge/Log4j-blue)
+![Static Badge](https://img.shields.io/badge/Maven-blue)
+
 
 # Сетевой чат (клиент)
 Учебный проект GeekBrains
@@ -19,7 +23,7 @@
 [//]: # (![img]&#40;./github_samples/login.png&#41;)
 [//]: # (![img]&#40;github_samples/chat/chat_demo.png&#41;)
 
-### Функционал проекта:
+## Функционал проекта:
 
 - загрузка с сервера истории сообщений при входе пользователя 
 - отображение списка активных пользователей
@@ -32,20 +36,24 @@
 - [регистрация нового пользователя](./github_samples/register_sample.png)
 - [закрытие клиента при процедуре входа или регистрации при неактивности клиента в течении 60 сек. (время устанавливается на сервере)](./github_samples/exit_client.png)
 - вывод лога в консоль
-### Установка
+## Установка
 ````
 git clone https://github.com/igojig/FxMessager_client
 ````
 
-### Запуск
+## Запуск
 Для функционирования требуется запуск [серверной части](https://github.com/igojig/ServerConsole)
 ```
 chcp 1251
 mvn clean javafx:run
 ```
 
-### Создание исполняемого образа
-``` java
+или запускать из IDE. Для запуска нескольких экземпляров приложения установить параметр<br>
+[Edit configuration->Modify options->Allow multiple instances](github_samples/edit_configuration.png)
+
+
+## Создание исполняемого образа
+```
 mvn clean javafx:jlink
 ```
 
