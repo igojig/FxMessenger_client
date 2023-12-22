@@ -28,7 +28,7 @@ import java.util.Optional;
 
 import static ru.igojig.fxmessenger.prefix.Prefix.CHANGE_USERNAME_REQUEST;
 
-public class ChatController extends Controller {
+public class ChatController implements Controller {
 
     private static final Logger logger = LogManager.getLogger(ChatController.class);
 

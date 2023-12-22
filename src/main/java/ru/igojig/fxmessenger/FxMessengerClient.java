@@ -47,7 +47,7 @@ public class FxMessengerClient extends Application {
         stage.setTitle("Fx Messenger-Client");
 
         FXMLLoader fxmlLoaderLogIn = new FXMLLoader(FxMessengerClient.class.getResource("login.fxml"));
-        sceneLogIn = new Scene(fxmlLoaderLogIn.load(), 645, 266);
+        sceneLogIn = new Scene(fxmlLoaderLogIn.load(), 600, 200);
         logInController = fxmlLoaderLogIn.getController();
         logInController.setNetwork(network);
 

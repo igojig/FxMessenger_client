@@ -13,7 +13,7 @@ import ru.igojig.fxmessenger.controllers.handlers.LoginControllerHandler;
 import ru.igojig.fxmessenger.service.Network;
 
 
-public class LogInController extends Controller {
+public class LogInController implements Controller {
 
     private static final Logger logger= LogManager.getLogger(LogInController.class);
 

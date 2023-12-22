@@ -1,12 +1,13 @@
-![Static Badge](https://img.shields.io/badge/Java-17%2B-blue)
-![Static Badge](https://img.shields.io/badge/Java%20FX-17%2B-blue)
+![Static Badge](https://img.shields.io/badge/Java-17-blue)
+![Static Badge](https://img.shields.io/badge/JavaFX-17-blue)
 ![Static Badge](https://img.shields.io/badge/Lombok-blue)
 ![Static Badge](https://img.shields.io/badge/Log4j-blue)
 ![Static Badge](https://img.shields.io/badge/Maven-blue)
 
 
-# Сетевой чат (клиент)
-Учебный проект GeekBrains
+# Сетевой чат (клиентская часть)
+Учебный проект GeekBrains (клиент и [сервер](https://github.com/igojig/ServerConsole))
+
 
 <p align="center">
     <img src="./github_samples/login.png" width="400">
@@ -19,9 +20,6 @@
     <img src="./github_samples/chat/chat_demo_3.png" width="600">&nbsp;
     <img src="./github_samples/chat/chat_demo_4.png" width="600">&nbsp;
 </p> 
-
-[//]: # (![img]&#40;./github_samples/login.png&#41;)
-[//]: # (![img]&#40;github_samples/chat/chat_demo.png&#41;)
 
 ## Функционал проекта:
 
@@ -48,7 +46,7 @@ chcp 1251
 mvn clean javafx:run
 ```
 
-или запускать из IDE. Для запуска нескольких экземпляров приложения установить параметр<br>
+Или запускать из IDE.<br> Для запуска нескольких экземпляров приложения установить параметр:<br>
 [Edit configuration->Modify options->Allow multiple instances](github_samples/edit_configuration.png)
 
 
