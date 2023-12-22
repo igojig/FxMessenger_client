@@ -1,7 +1,6 @@
 package ru.igojig.fxmessenger;
 
 import javafx.application.Application;
-import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -9,10 +8,8 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.igojig.fxmessenger.controllers.ChatController;
-import ru.igojig.fxmessenger.controllers.Controller;
-import ru.igojig.fxmessenger.controllers.LogInController;
-import ru.igojig.fxmessenger.model.User;
+import ru.igojig.fxmessenger.controllers.impl.ChatController;
+import ru.igojig.fxmessenger.controllers.impl.LogInController;
 import ru.igojig.fxmessenger.service.Network;
 
 

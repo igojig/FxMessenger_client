@@ -1,4 +1,4 @@
-package ru.igojig.fxmessenger.controllers;
+package ru.igojig.fxmessenger.controllers.impl;
 
 import javafx.application.HostServices;
 import javafx.application.Platform;
@@ -16,6 +16,7 @@ import javafx.scene.text.TextAlignment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.igojig.fxmessenger.FxMessengerClient;
+import ru.igojig.fxmessenger.controllers.Controller;
 import ru.igojig.fxmessenger.controllers.handlers.ChatControllerHandler;
 import ru.igojig.fxmessenger.exchanger.UserChangeMode;
 import ru.igojig.fxmessenger.exchanger.impl.UserExchanger;

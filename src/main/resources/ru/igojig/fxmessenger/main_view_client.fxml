@@ -20,7 +20,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.igojig.fxmessenger.controllers.ChatController">
+<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.igojig.fxmessenger.controllers.impl.ChatController">
    <center>
       <SplitPane dividerPositions="0.29797979797979796" minHeight="-Infinity" minWidth="-Infinity" BorderPane.alignment="CENTER">
         <items>

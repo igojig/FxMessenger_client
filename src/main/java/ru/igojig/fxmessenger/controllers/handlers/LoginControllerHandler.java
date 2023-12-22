@@ -8,7 +8,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.igojig.fxmessenger.controllers.LogInController;
+import ru.igojig.fxmessenger.controllers.impl.LogInController;
 import ru.igojig.fxmessenger.exchanger.Exchanger;
 import ru.igojig.fxmessenger.exchanger.impl.UserExchanger;
 import ru.igojig.fxmessenger.model.User;

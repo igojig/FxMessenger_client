@@ -1,4 +1,4 @@
-package ru.igojig.fxmessenger.controllers;
+package ru.igojig.fxmessenger.controllers.impl;
 
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -9,6 +9,7 @@ import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.igojig.fxmessenger.FxMessengerClient;
+import ru.igojig.fxmessenger.controllers.Controller;
 import ru.igojig.fxmessenger.controllers.handlers.LoginControllerHandler;
 import ru.igojig.fxmessenger.service.Network;
 

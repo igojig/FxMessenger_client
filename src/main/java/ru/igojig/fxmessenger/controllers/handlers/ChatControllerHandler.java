@@ -4,7 +4,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.igojig.fxmessenger.controllers.ChatController;
+import ru.igojig.fxmessenger.controllers.impl.ChatController;
 import ru.igojig.fxmessenger.exchanger.ChatExchanger;
 import ru.igojig.fxmessenger.exchanger.Exchanger;
 import ru.igojig.fxmessenger.exchanger.impl.HistoryExchanger;

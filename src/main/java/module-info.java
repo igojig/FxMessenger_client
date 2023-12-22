@@ -15,4 +15,6 @@ module ru.igojig.fxmessenger {
     exports ru.igojig.fxmessenger.model;
     exports ru.igojig.fxmessenger.exchanger.impl;
     exports ru.igojig.fxmessenger.exchanger;
+    exports ru.igojig.fxmessenger.controllers.impl;
+    opens ru.igojig.fxmessenger.controllers.impl to javafx.fxml;
 }
